@@ -1,0 +1,20 @@
+# Generated build and browser-test output.
+output/
+.playwright-cli/
+node_modules/
+
+# Local logs and operating-system/editor state.
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local WordPress/server state and secrets.
+.env
+.env.*
+wp-config.php
+*.sql
+*.sql.gz
+*.bak
+*.backup

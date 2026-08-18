@@ -1,0 +1,9 @@
+{
+  "name": "primaria-porumbesti-local",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-prototype.mjs",
+    "test:prototype": "node tests/prototype-smoke.mjs"
+  }
+}

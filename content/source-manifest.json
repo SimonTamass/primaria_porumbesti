@@ -1,0 +1,128 @@
+{
+  "project": "Primăria Comunei Porumbești / Kökényesd Község",
+  "auditedAt": "2026-08-17",
+  "languages": ["ro", "hu"],
+  "liveAudit": {
+    "snapshot": "content/live-content-snapshot.json",
+    "urlContract": "content/live-url-contract.json",
+    "report": "QA-URL-REPORT.md",
+    "refreshCommand": "python tools/snapshot-live-content.py --check-status",
+    "policy": "Existing WordPress IDs, slugs, parents, permalinks, Polylang relations and official document URLs must remain unchanged."
+  },
+  "pageMappings": {
+    "home": {
+      "ro": "https://primariaporumbesti.ro/ro/prima/",
+      "hu": "https://primariaporumbesti.ro/hu/fooldal/"
+    },
+    "commune": {
+      "ro": "https://primariaporumbesti.ro/ro/istoria-comunei/",
+      "hu": "https://primariaporumbesti.ro/hu/kozsegunk-tortenete/"
+    },
+    "cityHall": {
+      "ro": "https://primariaporumbesti.ro/ro/primar/",
+      "hu": "https://primariaporumbesti.ro/hu/polgarmester/"
+    },
+    "council": {
+      "ro": "https://primariaporumbesti.ro/ro/componenta-consiliului-local/",
+      "hu": "https://primariaporumbesti.ro/hu/a-helyi-tanacs-szerkezete/"
+    },
+    "publicInfo": {
+      "ro": "https://primariaporumbesti.ro/ro/category/anunturi/",
+      "hu": "https://primariaporumbesti.ro/hu/category/felhivasok/"
+    },
+    "officialMonitor": {
+      "ro": "https://primariaporumbesti.ro/ro/monitorul-oficial-local-2/",
+      "huFallback": "https://primariaporumbesti.ro/ro/monitorul-oficial-local-2/"
+    },
+    "contact": {
+      "ro": "https://primariaporumbesti.ro/ro/contact/",
+      "hu": "https://primariaporumbesti.ro/hu/elerhetosegeink/"
+    }
+  },
+  "contact": {
+    "phone": "0361 525 288",
+    "fax": "0361 525 288",
+    "email": "primar@primariaporumbesti.ro",
+    "addressRo": "România, jud. Satu Mare, com. Porumbești, sat Porumbești, nr. 17C, cod 447152",
+    "addressHu": "Románia, Szatmár megye, Kökényesd község, Kökényesd, 17C., 447152"
+  },
+  "assets": [
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/07/hatter-13.jpg",
+      "local": "assets/images/porumbesti-hero.webp",
+      "usage": ["home-hero", "page-hero", "commune-collage"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/07/logo-vegles.png",
+      "local": "assets/images/porumbesti-logo.png",
+      "usage": ["source-archive"]
+    },
+    {
+      "source": "local-redesign",
+      "local": "assets/images/porumbesti-monogram.svg",
+      "usage": ["header", "footer", "favicon", "wordpress-plugin"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/07/Toth-Zoltan-200x200.jpg",
+      "local": "assets/images/toth-zoltan.webp",
+      "usage": ["leadership", "mayor-message"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/06/secretar-300x300-200x200.png",
+      "local": "assets/images/csorba-levente.webp",
+      "usage": ["leadership"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/06/vice-300x300-200x200.png",
+      "local": "assets/images/simon-ilie.webp",
+      "usage": ["leadership"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2019/03/sisop.jpg",
+      "local": "assets/images/sisop.jpg",
+      "usage": ["transparency-banner"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2026/08/CAIET-DE-SARCINI-1-page-001.jpg",
+      "local": "assets/images/anunt-participare.webp",
+      "usage": ["announcements"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2026/08/anunt-colectare-textile-2026-page-001.jpg",
+      "local": "assets/images/anunt-textile.webp",
+      "usage": ["announcements"]
+    },
+    {
+      "source": "https://primariaporumbesti.ro/wp-content/uploads/2026/06/anunt-extra-page-001.jpg",
+      "local": "assets/images/anunt-extra.webp",
+      "usage": ["announcements"]
+    }
+  ],
+  "sourceRecords": [
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/prima/", "local": "ro/index.html", "usage": "Romanian homepage content and structure"},
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/istoria-comunei/", "local": "ro/comuna.html", "usage": "Municipality history and community view"},
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/primar/", "local": "ro/primaria.html", "usage": "Mayor and municipal leadership view"},
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/componenta-consiliului-local/", "local": "ro/consiliul-local.html", "usage": "Local council view"},
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/category/anunturi/", "local": "ro/informatii-publice.html", "usage": "Public information and announcements view"},
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/monitorul-oficial-local-2/", "local": "ro/monitorul-oficial.html", "usage": "Official local gazette view"},
+    {"language": "ro", "source": "https://primariaporumbesti.ro/ro/contact/", "local": "ro/contact.html", "usage": "Romanian contact view"},
+    {"language": "hu", "source": "https://primariaporumbesti.ro/hu/fooldal/", "local": "hu/index.html", "usage": "Hungarian homepage content and structure"},
+    {"language": "hu", "source": "https://primariaporumbesti.ro/hu/kozsegunk-tortenete/", "local": "hu/kozseg.html", "usage": "Municipality history and community view"},
+    {"language": "hu", "source": "https://primariaporumbesti.ro/hu/polgarmester/", "local": "hu/polgarmesteri-hivatal.html", "usage": "Mayor and municipal leadership view"},
+    {"language": "hu", "source": "https://primariaporumbesti.ro/hu/a-helyi-tanacs-szerkezete/", "local": "hu/helyi-tanacs.html", "usage": "Local council view"},
+    {"language": "hu", "source": "https://primariaporumbesti.ro/hu/category/felhivasok/", "local": "hu/kozerdeku.html", "usage": "Public information and announcements view"},
+    {"language": "hu-fallback-ro", "source": "https://primariaporumbesti.ro/ro/monitorul-oficial-local-2/", "local": "hu/helyi-hivatalos-kozlony.html", "usage": "Hungarian interface linking to authentic Romanian legal documents"},
+    {"language": "hu", "source": "https://primariaporumbesti.ro/hu/elerhetosegeink/", "local": "hu/elerhetosegek.html", "usage": "Hungarian contact view"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/07/hatter-13.jpg", "local": "assets/images/porumbesti-hero.webp", "usage": "Homepage hero, inner-page hero and local gallery"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/07/logo-vegles.png", "local": "assets/images/porumbesti-logo.png", "usage": "Archived source wordmark"},
+    {"language": "ro/hu", "source": "local-redesign", "local": "assets/images/porumbesti-monogram.svg", "usage": "Single-P institutional monogram in header, footer and Elementor templates"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/07/Toth-Zoltan-200x200.jpg", "local": "assets/images/toth-zoltan.webp", "usage": "Leadership cards and mayor message"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/06/secretar-300x300-200x200.png", "local": "assets/images/csorba-levente.webp", "usage": "Leadership cards"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2018/06/vice-300x300-200x200.png", "local": "assets/images/simon-ilie.webp", "usage": "Leadership cards"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2019/03/sisop.jpg", "local": "assets/images/sisop.jpg", "usage": "Transparency banner"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2026/08/CAIET-DE-SARCINI-1-page-001.jpg", "local": "assets/images/anunt-participare.webp", "usage": "Announcement card and local gallery"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2026/08/anunt-colectare-textile-2026-page-001.jpg", "local": "assets/images/anunt-textile.webp", "usage": "Announcement card and local gallery"},
+    {"language": "ro/hu", "source": "https://primariaporumbesti.ro/wp-content/uploads/2026/06/anunt-extra-page-001.jpg", "local": "assets/images/anunt-extra.webp", "usage": "Announcement card and local gallery"}
+  ],
+  "documentPolicy": "Official documents remain linked to their verified public source URLs. No legal content is machine-translated."
+}

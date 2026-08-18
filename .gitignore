@@ -3,6 +3,24 @@ output/
 .playwright-cli/
 node_modules/
 
+# Local development workspace. The publishable WordPress plugin lives only in
+# /wordpress-plugin/primaria-porumbesti-elementor/.
+/assets/
+/content/
+/hu/
+/includes/
+/ro/
+/templates/
+/tests/
+/tools/
+/index.html
+/package.json
+/primaria-porumbesti-elementor.php
+/readme.txt
+/uninstall.php
+/QA-REPORT.md
+/QA-URL-REPORT.md
+
 # Local logs and operating-system/editor state.
 *.log
 .DS_Store

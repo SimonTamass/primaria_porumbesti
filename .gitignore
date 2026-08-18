@@ -1,38 +1,47 @@
-# Generated build and browser-test output.
-output/
+# Local tooling and transient files
+.agents/
+.codex/
 .playwright-cli/
-node_modules/
+.thumbnail
+debug.log
+*.log
 
-# Local development workspace. The publishable WordPress plugin lives only in
-# /wordpress-plugin/primaria-porumbesti-elementor/.
-/assets/
+# Local redesign and content references – not part of the plugin repository
+/output/
 /content/
 /hu/
-/includes/
 /ro/
-/templates/
-/tests/
-/tools/
 /index.html
 /package.json
-/primaria-porumbesti-elementor.php
-/readme.txt
-/uninstall.php
 /QA-REPORT.md
 /QA-URL-REPORT.md
+/assets/css/prototype.css
+/assets/js/prototype.js
+/assets/images/*
+!/assets/images/favicon.svg
+!/assets/images/porumbesti-monogram.svg
+/tests/prototype-smoke.mjs
+/tests/full-content-parity-smoke.php
+/tests/url-contract-smoke.php
+/tools/build-prototype.mjs
+/tools/package-plugin.ps1
+/tools/snapshot-live-content.py
+/wordpress-plugin/
 
-# Local logs and operating-system/editor state.
-*.log
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
-
-# Local WordPress/server state and secrets.
+# Local WordPress/server state and secrets
 .env
 .env.*
 wp-config.php
+node_modules/
 *.sql
 *.sql.gz
 *.bak
 *.backup
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.idea/
+.vscode/

@@ -7,6 +7,7 @@
  * Text Domain: primaria-porumbesti
  * Requires at least: 6.4
  * Requires PHP: 8.0
+ * Update URI: https://primariaporumbesti.ro/cpanel-git-managed
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

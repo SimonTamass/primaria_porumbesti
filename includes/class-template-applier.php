@@ -1246,10 +1246,120 @@ final class Template_Applier {
 		return $content;
 	}
 
+	private function legacy_table_cell_markup( string $value ): string {
+		$lines = preg_split( '/\R/u', trim( $value ) ) ?: array();
+		$markup = array();
+		foreach ( $lines as $line ) {
+			$line = trim( $line );
+			if ( preg_match( '/^[^\s@]+@[^\s@]+\.[^\s@]+$/u', $line ) ) {
+				$markup[] = '<a href="' . esc_url( 'mailto:' . $line ) . '">' . esc_html( $line ) . '</a>';
+			} else {
+				$markup[] = esc_html( $line );
+			}
+		}
+		return implode( '<br>', $markup );
+	}
+
+	private function legacy_table_fallback( int $table_id ): string {
+		$tables = array(
+			1 => array(
+				'caption' => 'Hivatali részlegek',
+				'rows'    => array(
+					array( 'Adónyilvántartási szakosztály:', 'Moldovan Charleta Diana', "Tel: 0361525288\ntaxa_si_impozite@primariaporumbesti.ro" ),
+					array( 'Mezőgazdasági szakosztály:', 'Zelicskovics Ioan Zoltan', 'agent_agricol@primariaporumbesti.ro' ),
+					array( 'Településrendészeti szakosztály:', 'Iakab Gheorghe', 'agent_agricol@primariaporumbesti.ro' ),
+					array( 'Szociális szakosztály:', "Csinos Beata-Tunde\nJakab Andrea- Elisabeta", 'asistent_sociala@primariaporumbesti.ro' ),
+					array( "Titkár:\nAnyakönyvvezető:", 'Csorba Levente', 'secretar@primariaporumbesti.ro' ),
+					array( 'Könyvelőség:', 'Zelicskovics Maria - Simoneta', "Tel: 0361525288\ncontabilitate@primariaporumbesti.ro" ),
+					array( 'Katasztrófa védelmi felűgyelő:', 'Iakab Gheorghe', 'isu@primariaporumbesti.ro' ),
+					array( "Projekt Vezető:\nTurisztikai vezető", 'Rus Szabina-Maria', 'achizitie_publica@primariaporumbesti.ro' ),
+					array( "Projekt Vezető:\nUtazási ügynök", 'Lukacs Annamaria', 'asistent_sociala@primariaporumbesti.ro' ),
+				),
+			),
+			2 => array(
+				'caption' => 'Departamente',
+				'rows'    => array(
+					array( 'Taxe şi Impozite Locale:', 'Moldovan Charleta Diana', "Tel: 0361525288\ntaxa_si_impozite@primariaporumbesti.ro" ),
+					array( 'Registru Agricol:', 'Zelicskovics Ioan Zoltan', 'agent_agricol@primariaporumbesti.ro' ),
+					array( 'Urbanism:', 'Iakab Gheorghe', 'agent_agricol@primariaporumbesti.ro' ),
+					array( 'Asistenţa Socială:', "Csinos Beata-Tunde\nJakab Andrea- Elisabeta", 'asistent_sociala@primariaporumbesti.ro' ),
+					array( "Secretar\nStare Civilă", 'Marozsan Andrea', 'secretar@primariaporumbesti.ro' ),
+					array( 'Contabilitate:', 'Zelicskovics Maria - Simoneta', "Tel: 0361525288\ncontabilitate@primariaporumbesti.ro" ),
+					array( 'SVSU:', 'Iakab Gheorghe', 'isu@primariaporumbesti.ro' ),
+					array( "Implementare proiecte:\nGhid turistic", 'Rus Szabina-Maria', 'achizitie_publica@primariaporumbesti.ro' ),
+					array( "Implementare proiecte:\nAgent turistic", 'Lukacs Annamaria', 'asistent_sociala@primariaporumbesti.ro' ),
+				),
+			),
+			4 => array(
+				'caption' => 'Conducere',
+				'rows'    => array(
+					array( 'Tóth Zoltán', 'primar' ),
+					array( 'Simon Ilie', 'viceprimar' ),
+					array( 'Marozsan Andrea', 'secretar' ),
+					array( 'Zelicskovics Maria Simoneta', 'consilier superior' ),
+					array( 'Iakab Gheorghe', 'inspector protectie civila' ),
+					array( 'Csinos Beata Tunde', 'consilier superior' ),
+					array( 'Zelicskovics Ioan Zoltan', 'consilier superior' ),
+					array( 'Moldovan Diana Charlotte', 'consilier principal' ),
+					array( 'Jakab Andrea Elisabeta', 'referent superior' ),
+				),
+			),
+		);
+
+		if ( empty( $tables[ $table_id ] ) ) {
+			return '';
+		}
+
+		$table = $tables[ $table_id ];
+		$html = '<div class="porumbesti-table-wrap"><table class="porumbesti-table"><caption>' . esc_html( $table['caption'] ) . '</caption><tbody>';
+		foreach ( $table['rows'] as $row ) {
+			$html .= '<tr>';
+			foreach ( $row as $cell ) {
+				$html .= '<td>' . $this->legacy_table_cell_markup( $cell ) . '</td>';
+			}
+			$html .= '</tr>';
+		}
+		return $html . '</tbody></table></div>';
+	}
+
+	private function expand_legacy_table_shortcodes( string $content ): string {
+		return preg_replace_callback(
+			'/\[table\s+id\s*=\s*["\']?(\d+)["\']?[^\]]*\](?:\[\/table\])?/i',
+			function ( array $matches ): string {
+				if ( function_exists( 'shortcode_exists' ) && shortcode_exists( 'table' ) && function_exists( 'do_shortcode' ) ) {
+					$rendered = do_shortcode( $matches[0] );
+					if ( '' !== trim( $rendered ) && $matches[0] !== $rendered ) {
+						return $rendered;
+					}
+				}
+				return $this->legacy_table_fallback( (int) $matches[1] );
+			},
+			$content
+		) ?? $content;
+	}
+
+	private function expand_legacy_raw_html_shortcodes( string $content ): string {
+		$content = preg_replace_callback(
+			'/\[vc_raw_html\b[^\]]*\](.*?)\[\/vc_raw_html\]/is',
+			static function ( array $matches ): string {
+				$encoded = preg_replace( '/\s+/', '', html_entity_decode( wp_strip_all_tags( $matches[1] ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+				$decoded = base64_decode( (string) $encoded, true );
+				if ( false === $decoded ) {
+					return $matches[1];
+				}
+				return preg_match( '/%[0-9a-f]{2}/i', $decoded ) ? rawurldecode( $decoded ) : $decoded;
+			},
+			$content
+		) ?? $content;
+
+		return $this->expand_legacy_table_shortcodes( $content );
+	}
+
 	private function normalize_legacy_content( string $content ): string {
 		if ( str_contains( $content, 'porumbesti-header-wrap' ) || str_contains( $content, 'elementor-widget-porumbesti-site-header' ) ) {
 			$content = $this->extract_nested_richtext( $content );
 		}
+		$content = $this->expand_legacy_raw_html_shortcodes( $content );
 		$content = $this->expand_legacy_link_shortcodes( $content );
 		$content = $this->expand_legacy_media_shortcodes( $content );
 		$protected_media = array();
@@ -1577,11 +1687,12 @@ final class Template_Applier {
 	private function comuna_ro_data( \WP_Post $page ): array {
 		$seed = 'comuna-' . $page->ID;
 		$routes = $this->routes();
+		$page_title = get_the_title( $page );
 		$source = $this->normalize_legacy_content( $this->original_page_content( $page ) );
 		$data = $this->redesign_page_start(
 			$page,
 			$seed,
-			'Comuna Porumbești',
+			$page_title,
 			'O pagină nativă pentru istorie, localizare, monumente, personalități, sport și turism.',
 			'',
 			$this->design_media( '2018/07/hatter-13.jpg', 'comuna-page-hero' )
@@ -1917,11 +2028,11 @@ final class Template_Applier {
 					'kicker'      => $is_hungarian ? 'Elérhetőség' : 'Contact',
 					'title'       => $is_hungarian ? 'Kökényesd Község Polgármesteri Hivatala' : 'Primăria Comunei Porumbești',
 					'description' => $is_hungarian ? 'Hivatali elérhetőségek és ügyfélfogadási információk.' : 'Date de contact și program de lucru pentru cetățeni.',
-					'address'     => $is_hungarian ? 'Románia, Szatmár megye, Kökényesd község, Kökényesd, 17C., 447152' : 'România, jud. Satu Mare, com. Porumbești, sat Porumbești, nr. 17C, cod 447152',
-					'address_code' => $is_hungarian ? 'CÍM' : 'LOC',
-					'phone'       => '0361 525 288',
-					'phone_secondary' => '0361 525 288',
-					'fax'         => '0361 525 288',
+					'address'     => $is_hungarian ? 'Romania, Jud. Satu Mare, Com. Porumbesti, Sat. Porumbesti, Nr 17C, Cod. 447152' : 'România, jud. Satu Mare, com. Porumbești, sat Porumbești, nr. 17C, cod 447152',
+					'address_code' => $is_hungarian ? 'Cim' : 'LOC',
+					'phone'       => $is_hungarian ? '0361 525288' : '0361 525 288',
+					'phone_secondary' => $is_hungarian ? '' : '0361 525 288',
+					'fax'         => $is_hungarian ? '0361 525288' : '0361 525 288',
 					'email'       => 'primar@primariaporumbesti.ro',
 					'registration_label' => 'CIF',
 					'registration_value' => '17530869',

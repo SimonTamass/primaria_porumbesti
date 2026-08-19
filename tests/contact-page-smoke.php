@@ -12,6 +12,7 @@ $checks = array(
 	'contact form placement' => array( $applier, "'porumbesti-contact-form'" ),
 	'Romanian contact copy' => array( $applier, "'Trimiteți-ne un mesaj'" ),
 	'Hungarian contact copy' => array( $applier, "'Írjon nekünk'" ),
+	'preserved Hungarian public address' => array( $applier, 'Romania, Jud. Satu Mare, Com. Porumbesti, Sat. Porumbesti, Nr 17C, Cod. 447152' ),
 	'embedded office map' => array( $applier, '47.9839429,22.9718739' ),
 	'preserved fax control' => array( $details, "add_control( 'fax'" ),
 	'preserved fiscal identifier' => array( $details . $applier, '17530869' ),

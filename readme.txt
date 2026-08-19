@@ -3,7 +3,7 @@ Contributors: primariaporumbesti
 Tags: elementor, municipality, multilingual, documents, accessibility
 Requires at least: 6.4
 Requires PHP: 8.0
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2 or later
 
 A bilingual 24-widget Elementor system for the Porumbesti / Kokenyesd municipal portal.
@@ -33,6 +33,10 @@ The contact endpoint includes a nonce, honeypot, signed recipient validation, se
 5. Use Tools > Comuna Porumbesti rebuild only on a backed-up local or staging copy.
 
 == Changelog ==
+
+= 1.0.11 =
+* Recovers the three legacy Visual Composer/TablePress department and leadership tables even when TablePress is not installed.
+* Preserves the exact published Hungarian contact address and the original Romanian presentation-page title during rebuilds.
 
 = 1.0.10 =
 * Blocks every Elementor rebuild action while Polylang is inactive so Romanian/Hungarian identities and translation relations cannot be processed from an incomplete page inventory.

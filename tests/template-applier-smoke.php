@@ -45,7 +45,7 @@ if ( ! str_contains( $css, 'font-size: 16px; line-height: 1.55' ) || ! str_conta
 	exit( 1 );
 }
 
-if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.10'" ) ) {
+if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.11'" ) ) {
 	fwrite( STDERR, "Plugin version was not bumped.\n" );
 	exit( 1 );
 }
@@ -55,7 +55,7 @@ if ( ! str_contains( $applier, 'function normalize_legacy_content' ) || ! str_co
 	exit( 1 );
 }
 
-foreach ( array( 'Servicii publice transparente pentru Comuna Porumbești.', 'Informații utile astăzi', 'Anunțuri oficiale', 'Hotărâri recente', 'Istorie, cultură și natură în inima județului Satu Mare', 'Documente publice într-un singur loc', 'Guvernare transparentă, deschisă și participativă', "'category'     => 'anunturi'", "'title' => 'Monitorul Oficial Local'", "'title' => 'Telefoane utile'", "'title' => 'Legislație'", "'title' => 'Portal online'", "'title' => 'Consiliul Local'", "'title' => 'Galeria foto'", 'function expand_legacy_link_shortcodes', 'function legacy_post_queries' ) as $needle ) {
+foreach ( array( 'Servicii publice transparente pentru Comuna Porumbești.', 'Informații utile astăzi', 'Anunțuri oficiale', 'Hotărâri recente', 'Istorie, cultură și natură în inima județului Satu Mare', 'Documente publice într-un singur loc', 'Guvernare transparentă, deschisă și participativă', "'category'     => 'anunturi'", "'title' => 'Monitorul Oficial Local'", "'title' => 'Telefoane utile'", "'title' => 'Legislație'", "'title' => 'Portal online'", "'title' => 'Consiliul Local'", "'title' => 'Galeria foto'", 'function expand_legacy_link_shortcodes', 'function expand_legacy_raw_html_shortcodes', 'function legacy_table_fallback', 'function legacy_post_queries' ) as $needle ) {
 	if ( ! str_contains( $applier, $needle ) ) {
 		fwrite( STDERR, "Missing original-content parity contract: {$needle}.\n" );
 		exit( 1 );

@@ -3,7 +3,7 @@ Contributors: primariaporumbesti
 Tags: elementor, municipality, multilingual, documents, accessibility
 Requires at least: 6.4
 Requires PHP: 8.0
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: GPLv2 or later
 
 A bilingual 24-widget Elementor system for the Porumbesti / Kokenyesd municipal portal.
@@ -26,13 +26,17 @@ The contact endpoint includes a nonce, honeypot, signed recipient validation, se
 
 == Installation ==
 
-1. Upload the plugin ZIP under Plugins > Add New > Upload Plugin.
-2. Activate Elementor and this plugin.
+1. Clone this repository directly into its final directory under wp-content/plugins using cPanel Git Version Control; do not add another directory around the repository root.
+2. Pull plugin updates from the main branch in cPanel Git Version Control, then activate Elementor and this plugin.
 3. Optionally activate Polylang for Romanian/Hungarian language relations.
 4. Find the widgets in the Comuna Porumbesti Elementor category.
 5. Use Tools > Comuna Porumbesti rebuild only on a backed-up local or staging copy.
 
 == Changelog ==
+
+= 1.0.9 =
+* Corrects the Romanian and Hungarian leadership-card URLs so the vice mayor and secretary open their existing role-specific pages.
+* Documents the cPanel Git Version Control deployment layout used by the development site.
 
 = 1.0.8 =
 * Removes the separate language gateway so the Romanian homepage opens directly while the RO/HU switch remains available in the header.

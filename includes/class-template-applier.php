@@ -701,6 +701,8 @@ final class Template_Applier {
 				'urbanism'      => array( array( 'urbanism' ), array() ),
 				'agricultural'  => array( array( 'registru-agricol' ), array() ),
 				'mayor'         => array( array( 'primar' ), array( 'polgarmester' ) ),
+				'vice_mayor'    => array( array( 'viceprimar' ), array( 'alpolgarmester' ) ),
+				'secretary'     => array( array( 'secretar' ), array( 'jegyzo' ) ),
 				'council'       => array( array( 'componenta-consiliului-local' ), array( 'a-helyi-tanacs-szerkezete' ) ),
 				'history'       => array( array( 'istoria-comunei' ), array( 'kozsegunk-tortenete' ) ),
 				'monuments'     => array( array(), array( 'rathonyi-akos', 'jendrassik-jeno' ) ),
@@ -744,6 +746,8 @@ final class Template_Applier {
 			'agricultural'  => $this->page_url( array( 'registru-agricol' ), '/ro/departamente/' ),
 			'departments'   => $this->page_url( array( 'departamente' ), '/ro/departamente/' ),
 			'mayor'         => $this->page_url( array( 'primar' ), '/ro/primar/' ),
+			'vice_mayor'    => $this->page_url( array( 'viceprimar' ), '/ro/viceprimar/' ),
+			'secretary'     => $this->page_url( array( 'secretar' ), '/ro/secretar/' ),
 			'council'       => $this->page_url( array( 'componenta-consiliului-local' ), '/ro/componenta-consiliului-local/' ),
 			'history'       => $this->page_url( array( 'istoria-comunei' ), '/ro/istoria-comunei/' ),
 			'location'      => $this->page_url( array( 'prezentarea-comunei-porumbesti' ), '/ro/prezentarea-comunei-porumbesti/' ),
@@ -1961,8 +1965,8 @@ final class Template_Applier {
 		$mayor_image = $mayor_item ? $mayor_item['image'] : $this->media();
 		$leadership_items = array(
 			array( 'icon' => 'PR', 'image' => $mayor_image, 'title' => 'Tóth Zoltán · Primar', 'description' => 'Conducerea executivă a Comunei Porumbești.', 'url' => $this->link( $routes['mayor'] ) ),
-			array( 'icon' => 'VP', 'image' => $vice_mayor_item ? $vice_mayor_item['image'] : $this->media(), 'title' => 'Simon Ilie · Viceprimar', 'description' => 'Conducerea executivă a administrației locale.', 'url' => $this->link( $routes['mayor'] ) ),
-			array( 'icon' => 'SG', 'image' => $secretary_item ? $secretary_item['image'] : $this->media(), 'title' => 'Csorba Levente · Secretar general', 'description' => 'Secretarul general al Comunei Porumbești.', 'url' => $this->link( $routes['mayor'] ) ),
+			array( 'icon' => 'VP', 'image' => $vice_mayor_item ? $vice_mayor_item['image'] : $this->media(), 'title' => 'Simon Ilie · Viceprimar', 'description' => 'Conducerea executivă a administrației locale.', 'url' => $this->link( $routes['vice_mayor'] ) ),
+			array( 'icon' => 'SG', 'image' => $secretary_item ? $secretary_item['image'] : $this->media(), 'title' => 'Csorba Levente · Secretar general', 'description' => 'Secretarul general al Comunei Porumbești.', 'url' => $this->link( $routes['secretary'] ) ),
 		);
 		$mayor_message = '<p class="porumbesti-mayor-quote">În calitate de primar al comunei Porumbești, adresez un sincer bun venit tuturor celor ce au accesat acest site. Dorim să oferim informația produsă și gestionată de administrația publică locală într-un mod deschis și transparent.</p><p><strong>Tóth Zoltán · Primar</strong></p>';
 		$community_content = '<p>Descoperiți istoria comunei, prezentarea localității, personalitățile și activitatea sportivă locală.</p>'
@@ -2213,8 +2217,8 @@ final class Template_Applier {
 		$mayor_image = $mayor_item ? $mayor_item['image'] : $this->media();
 		$leadership_items = array(
 			array( 'icon' => 'PM', 'image' => $mayor_image, 'title' => 'Tóth Zoltán · Polgármester', 'description' => 'Kökényesd község végrehajtó vezetője.', 'url' => $this->link( $routes['mayor'] ) ),
-			array( 'icon' => 'AP', 'image' => $vice_mayor_item ? $vice_mayor_item['image'] : $this->media(), 'title' => 'Simon Ilie · Alpolgármester', 'description' => 'A helyi közigazgatás végrehajtó vezetősége.', 'url' => $this->link( $routes['mayor'] ) ),
-			array( 'icon' => 'J', 'image' => $secretary_item ? $secretary_item['image'] : $this->media(), 'title' => 'Csorba Levente · Jegyző', 'description' => 'Kökényesd község főjegyzője.', 'url' => $this->link( $routes['mayor'] ) ),
+			array( 'icon' => 'AP', 'image' => $vice_mayor_item ? $vice_mayor_item['image'] : $this->media(), 'title' => 'Simon Ilie · Alpolgármester', 'description' => 'A helyi közigazgatás végrehajtó vezetősége.', 'url' => $this->link( $routes['vice_mayor'] ) ),
+			array( 'icon' => 'J', 'image' => $secretary_item ? $secretary_item['image'] : $this->media(), 'title' => 'Csorba Levente · Jegyző', 'description' => 'Kökényesd község főjegyzője.', 'url' => $this->link( $routes['secretary'] ) ),
 		);
 		$mayor_message = '<p class="porumbesti-mayor-quote">Kökényesd község polgármestereként szeretettel köszöntöm honlapunk látogatóit. Célunk, hogy a helyi közigazgatás által kezelt információkat nyitottan, átláthatóan és könnyen elérhetően tegyük közzé.</p><p><strong>Tóth Zoltán · Polgármester</strong></p>';
 		$community_content = '<p>Ismerje meg Kökényesd Község történetét, jelentős személyiségeit és helyi sportéletét.</p><div class="porumbesti-home-link-list">'

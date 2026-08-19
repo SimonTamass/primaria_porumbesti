@@ -426,7 +426,9 @@ def content_link_key(value: str) -> str | None:
     parts = [part for part in path.split("/") if part]
     if not parts:
         return "home"
-    if parts[-1] in {"feed", "comments"}:
+    if parts[-1] in {"feed", "comments", ">"}:
+        return None
+    if re.fullmatch(r"[^/\s@]+@[^/\s@]+\.[^/\s@]+", parts[-1]):
         return None
     # Production uses hierarchical page paths while the rebuilt site exposes
     # many matching records at a flat canonical path. The last slug is stable.

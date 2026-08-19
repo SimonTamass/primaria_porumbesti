@@ -4,17 +4,27 @@ $files = array(
 	$root . '/README.md',
 	$root . '/README-HU.md',
 	$root . '/readme.txt',
-	$root . '/includes/widgets/class-news-grid.php',
-	$root . '/includes/widgets/class-post-archive.php',
+	$root . '/primaria-porumbesti-elementor.php',
 );
+$extensions = array( 'css', 'html', 'js', 'json', 'md', 'php', 'py', 'svg', 'txt', 'xml', 'yaml', 'yml' );
+foreach ( array( 'assets', 'includes', 'templates', 'tools' ) as $directory ) {
+	$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $root . '/' . $directory, FilesystemIterator::SKIP_DOTS ) );
+	foreach ( $iterator as $item ) {
+		if ( $item->isFile() && in_array( strtolower( $item->getExtension() ), $extensions, true ) ) {
+			$files[] = $item->getPathname();
+		}
+	}
+}
 
 $content = '';
 foreach ( $files as $file ) {
 	$content .= file_get_contents( $file );
 }
 
-if ( preg_match( '/comuna[_ -]?agris|<span>CA<\/span>/i', $content ) ) {
-	fwrite( STDERR, "Inherited Comuna Agris branding remains in the Porumbesti project.\n" );
+$unrelated_project_name = 'ag' . 'ris';
+$unrelated_monogram = '<span>' . 'C' . 'A</span>';
+if ( str_contains( strtolower( $content ), $unrelated_project_name ) || str_contains( $content, $unrelated_monogram ) ) {
+	fwrite( STDERR, "Unrelated legacy branding remains in the Porumbesti project.\n" );
 	exit( 1 );
 }
 

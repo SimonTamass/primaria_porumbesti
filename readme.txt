@@ -35,7 +35,7 @@ The contact endpoint includes a nonce, honeypot, signed recipient validation, se
 == Changelog ==
 
 = 1.0.12 =
-* Replaces the unrelated legacy "CA" image fallback with the Porumbești "P" monogram in news grids and archives.
+* Replaces the unrelated legacy image placeholder with the Porumbești "P" monogram in news grids and archives.
 * Removes obsolete cross-project references from the deployment documentation.
 
 = 1.0.11 =

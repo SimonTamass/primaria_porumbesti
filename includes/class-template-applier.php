@@ -65,11 +65,15 @@ final class Template_Applier {
 		$group_ok = isset( $_GET['porumbesti_ok'] ) ? absint( $_GET['porumbesti_ok'] ) : 0;
 		$group_failed = isset( $_GET['porumbesti_failed'] ) ? absint( $_GET['porumbesti_failed'] ) : 0;
 		$all_done = isset( $_GET['porumbesti_all'] ) ? absint( $_GET['porumbesti_all'] ) : 0;
+		$language_layer_ready = $this->language_layer_ready();
 		$routes  = array( 'ro' => $this->routes( 'ro' ), 'hu' => $this->routes( 'hu' ) );
 		$targets = $this->template_targets();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Comuna Porumbești rebuild', 'primaria-porumbesti' ); ?></h1>
+			<?php if ( ! $language_layer_ready ) : ?>
+				<div class="notice notice-error"><p><strong><?php esc_html_e( 'Reconstrucția este blocată.', 'primaria-porumbesti' ); ?></strong> <?php esc_html_e( 'Polylang trebuie să fie activ pentru identificarea sigură a paginilor române și maghiare și pentru păstrarea relațiilor de traducere. Az átépítéshez aktiválni kell a már telepített Polylang bővítményt.', 'primaria-porumbesti' ); ?></p></div>
+			<?php endif; ?>
 			<?php if ( 'applied' === $status ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Șablonul Elementor a fost aplicat fără schimbarea adresei paginii.', 'primaria-porumbesti' ); ?></p></div>
 			<?php elseif ( 'restored' === $status ) : ?>
@@ -94,7 +98,7 @@ final class Template_Applier {
 						<td><?php if ( $post ) : ?><strong><?php echo esc_html( get_the_title( $post ) ); ?></strong><br><code><?php echo esc_html( get_permalink( $post ) ); ?></code><?php else : ?><span style="color:#b32d2e"><?php esc_html_e( 'Pagina nu a fost găsită automat.', 'primaria-porumbesti' ); ?></span><?php endif; ?></td>
 						<td><?php echo esc_html( sprintf( __( '%d copii disponibile', 'primaria-porumbesti' ), count( $backups ) ) ); ?><?php if ( is_array( $manifest ) && ! empty( $manifest['applied_at'] ) ) : ?><br><small><?php echo esc_html( sprintf( __( 'Ultima aplicare: %s, versiunea %s', 'primaria-porumbesti' ), $manifest['applied_at'], $manifest['version'] ?? '' ) ); ?></small><?php endif; ?></td>
 						<td>
-							<?php if ( $post && current_user_can( 'edit_post', $post->ID ) ) : ?>
+							<?php if ( $language_layer_ready && $post && current_user_can( 'edit_post', $post->ID ) ) : ?>
 								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;margin-right:8px">
 									<input type="hidden" name="action" value="porumbesti_apply_template">
 									<input type="hidden" name="template" value="<?php echo esc_attr( $template ); ?>">
@@ -120,13 +124,13 @@ final class Template_Applier {
 			<p><?php esc_html_e( 'Sunt incluse separat paginile române și maghiare publicate. Paginile private și ciornele nu sunt modificate. Fiecare pagină primește propria copie de siguranță.', 'primaria-porumbesti' ); ?></p>
 			<table class="widefat striped" style="max-width:980px"><thead><tr><th><?php esc_html_e( 'Grup', 'primaria-porumbesti' ); ?></th><th><?php esc_html_e( 'Pagini', 'primaria-porumbesti' ); ?></th><th><?php esc_html_e( 'Descriere', 'primaria-porumbesti' ); ?></th><th><?php esc_html_e( 'Acțiune', 'primaria-porumbesti' ); ?></th></tr></thead><tbody>
 			<?php foreach ( $this->rebuild_groups() as $group => $definition ) : $group_pages = $this->group_pages( $group ); ?>
-				<tr><th scope="row"><?php echo esc_html( $definition['label'] ); ?></th><td><?php echo (int) count( $group_pages ); ?></td><td><?php echo esc_html( $definition['description'] ); ?></td><td><form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="porumbesti_apply_group"><input type="hidden" name="group" value="<?php echo esc_attr( $group ); ?>"><?php wp_nonce_field( self::NONCE_GROUP . '_' . $group ); ?><?php submit_button( sprintf( __( 'Reconstruiește grupul (%d)', 'primaria-porumbesti' ), count( $group_pages ) ), 'secondary', 'submit', false, count( $group_pages ) ? array() : array( 'disabled' => 'disabled' ) ); ?></form></td></tr>
+				<tr><th scope="row"><?php echo esc_html( $definition['label'] ); ?></th><td><?php echo (int) count( $group_pages ); ?></td><td><?php echo esc_html( $definition['description'] ); ?></td><td><form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="porumbesti_apply_group"><input type="hidden" name="group" value="<?php echo esc_attr( $group ); ?>"><?php wp_nonce_field( self::NONCE_GROUP . '_' . $group ); ?><?php submit_button( sprintf( __( 'Reconstruiește grupul (%d)', 'primaria-porumbesti' ), count( $group_pages ) ), 'secondary', 'submit', false, $language_layer_ready && count( $group_pages ) ? array() : array( 'disabled' => 'disabled' ) ); ?></form></td></tr>
 			<?php endforeach; ?>
 			</tbody></table>
 			<h2 style="margin-top:28px"><?php esc_html_e( 'Reconstrucție completă', 'primaria-porumbesti' ); ?></h2>
 			<p><?php esc_html_e( 'Aplicați separat sistemul Elementor pe paginile române sau maghiare publicate, fără schimbarea adreselor.', 'primaria-porumbesti' ); ?></p>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="porumbesti_apply_all"><?php wp_nonce_field( self::NONCE_ALL ); ?><?php submit_button( sprintf( __( 'Reconstruiește toate paginile române (%d)', 'primaria-porumbesti' ), count( $this->published_ro_pages() ) + count( array_filter( wp_list_pluck( $this->template_targets( 'ro' ), 'post_id' ) ) ) ), 'primary', 'submit', false ); ?></form>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:10px"><input type="hidden" name="action" value="porumbesti_apply_all_hu"><?php wp_nonce_field( self::NONCE_ALL_HU ); ?><?php submit_button( sprintf( __( 'Reconstruiește toate paginile maghiare (%d)', 'primaria-porumbesti' ), count( $this->published_hu_pages() ) + count( array_filter( wp_list_pluck( $this->template_targets( 'hu' ), 'post_id' ) ) ) ), 'primary', 'submit', false ); ?></form>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="porumbesti_apply_all"><?php wp_nonce_field( self::NONCE_ALL ); ?><?php submit_button( sprintf( __( 'Reconstruiește toate paginile române (%d)', 'primaria-porumbesti' ), count( $this->published_ro_pages() ) + count( array_filter( wp_list_pluck( $this->template_targets( 'ro' ), 'post_id' ) ) ) ), 'primary', 'submit', false, $language_layer_ready ? array() : array( 'disabled' => 'disabled' ) ); ?></form>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:10px"><input type="hidden" name="action" value="porumbesti_apply_all_hu"><?php wp_nonce_field( self::NONCE_ALL_HU ); ?><?php submit_button( sprintf( __( 'Reconstruiește toate paginile maghiare (%d)', 'primaria-porumbesti' ), count( $this->published_hu_pages() ) + count( array_filter( wp_list_pluck( $this->template_targets( 'hu' ), 'post_id' ) ) ) ), 'primary', 'submit', false, $language_layer_ready ? array() : array( 'disabled' => 'disabled' ) ); ?></form>
 			<h2 style="margin-top:28px"><?php esc_html_e( 'Rute folosite de șablon', 'primaria-porumbesti' ); ?></h2>
 			<table class="widefat striped" style="max-width:820px"><tbody><?php foreach ( $routes as $language => $language_routes ) : ?><?php foreach ( $language_routes as $key => $route ) : ?><tr><th scope="row"><?php echo esc_html( strtoupper( $language ) . ' · ' . $key ); ?></th><td><code><?php echo esc_html( $route ); ?></code></td></tr><?php endforeach; ?><?php endforeach; ?></tbody></table>
 		</div>
@@ -144,6 +148,7 @@ final class Template_Applier {
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			wp_die( esc_html__( 'Nu aveți permisiunea necesară.', 'primaria-porumbesti' ) );
 		}
+		$this->require_language_layer();
 
 		$targets = $this->template_targets();
 		if ( ! isset( $targets[ $template ] ) || $post_id !== (int) $targets[ $template ]['post_id'] ) {
@@ -176,6 +181,7 @@ final class Template_Applier {
 		if ( ! isset( $groups[ $group ] ) || ! check_admin_referer( self::NONCE_GROUP . '_' . $group ) || ! current_user_can( 'edit_pages' ) ) {
 			wp_die( esc_html__( 'Cerere invalidă.', 'primaria-porumbesti' ) );
 		}
+		$this->require_language_layer();
 
 		if ( function_exists( 'set_time_limit' ) ) {
 			@set_time_limit( 180 );
@@ -214,6 +220,7 @@ final class Template_Applier {
 		if ( ! check_admin_referer( $nonce ) || ! current_user_can( 'edit_pages' ) ) {
 			wp_die( esc_html__( 'Cerere invalidă.', 'primaria-porumbesti' ) );
 		}
+		$this->require_language_layer();
 
 		if ( function_exists( 'set_time_limit' ) ) {
 			@set_time_limit( 600 );
@@ -274,6 +281,21 @@ final class Template_Applier {
 		}
 
 		return $this->write_elementor_page( $post, $template, $data );
+	}
+
+	private function language_layer_ready(): bool {
+		return function_exists( 'pll_get_post_language' )
+			&& function_exists( 'pll_get_post' )
+			&& function_exists( 'pll_get_post_translations' );
+	}
+
+	private function require_language_layer(): void {
+		if ( $this->language_layer_ready() ) {
+			return;
+		}
+
+		wp_safe_redirect( admin_url( 'tools.php?page=porumbesti-rebuild&porumbesti_status=error&porumbesti_error=polylang_required' ) );
+		exit;
 	}
 
 	private function write_elementor_page( \WP_Post $post, string $template, array $data ) {

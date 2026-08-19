@@ -27,4 +27,4 @@ The plugin rebuilds the existing cloned WordPress pages. The database content,
 page IDs, documents, and media library remain in the cloned database and
 `wp-content/uploads`; they are not duplicated inside this code repository.
 
-Requirements: WordPress 6.4+, PHP 8.0+, Elementor, and optionally Polylang.
+Requirements: WordPress 6.4+, PHP 8.0+, Elementor, and Polylang for bilingual rebuild operations.

@@ -410,6 +410,10 @@ def content_link_key(value: str) -> str | None:
     value = clean_url(value)
     if not value or value.startswith(("data:", "javascript:", "mailto:", "tel:", "#")):
         return None
+    # Several legacy TablePress cells contain bare email addresses or a stray
+    # ">" as href values. They are malformed contact links, not internal pages.
+    if value == ">" or re.fullmatch(r"[^/\s@]+@[^/\s@]+\.[^/\s@]+", value):
+        return None
     if asset_key(value):
         return None
     parsed = urllib.parse.urlsplit(urllib.parse.urljoin(PROD_ORIGIN, value))

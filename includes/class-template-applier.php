@@ -2332,7 +2332,9 @@ final class Template_Applier {
 				array( 'content_width' => 'full' )
 			),
 		);
-		array_splice( $data, -1, 0, $this->original_content_sections( $page, 'ro', 'home-ro-' . $page->ID ) );
+		// The homepage already presents the relevant legacy material in dedicated,
+		// curated sections. The original source remains stored in SOURCE_META for
+		// recovery, but rendering it here would duplicate the whole page before the footer.
 		return $data;
 	}
 
@@ -2428,7 +2430,8 @@ final class Template_Applier {
 				$this->widget( 'hu-accessibility-widget', 'porumbesti-accessibility', $this->accessibility_settings( 'hu' ) ),
 			), array( 'content_width' => 'full' ) ),
 		);
-		array_splice( $data, -1, 0, $this->original_content_sections( $page, 'hu', 'home-hu-' . $page->ID ) );
+		// Keep the Hungarian homepage focused on its curated bilingual sections.
+		// The untouched source backup remains available for recovery and auditing.
 		return $data;
 	}
 

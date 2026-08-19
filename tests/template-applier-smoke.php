@@ -45,8 +45,28 @@ if ( ! str_contains( $css, 'font-size: 16px; line-height: 1.55' ) || ! str_conta
 	exit( 1 );
 }
 
-if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.12'" ) ) {
+if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.13'" ) ) {
 	fwrite( STDERR, "Plugin version was not bumped.\n" );
+	exit( 1 );
+}
+
+$home_ro_start = strpos( $applier, 'private function home_ro_data' );
+$home_hu_start = strpos( $applier, 'private function home_hu_data' );
+$mayor_ro_start = strpos( $applier, 'private function mayor_ro_data' );
+$home_ro_block = false !== $home_ro_start && false !== $home_hu_start
+	? substr( $applier, $home_ro_start, $home_hu_start - $home_ro_start )
+	: '';
+$home_hu_block = false !== $home_hu_start && false !== $mayor_ro_start
+	? substr( $applier, $home_hu_start, $mayor_ro_start - $home_hu_start )
+	: '';
+
+if ( str_contains( $home_ro_block, 'original_content_sections' ) || str_contains( $home_hu_block, 'original_content_sections' ) ) {
+	fwrite( STDERR, "Homepage must not append the full legacy source before its footer.\n" );
+	exit( 1 );
+}
+
+if ( ! str_contains( $applier, "original_content_sections( \$page, 'ro', \$seed )" ) ) {
+	fwrite( STDERR, "Internal-page legacy content preservation is missing.\n" );
 	exit( 1 );
 }
 

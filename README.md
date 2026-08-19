@@ -1,9 +1,8 @@
 # Primăria Porumbești Elementor Widgets
 
-This repository is the root directory of the installable WordPress plugin,
-matching the deployment layout used by `comuna_agris`. Clone the repository
-directly into a directory under `wp-content/plugins/`; do not place another
-plugin folder around it.
+This repository is the root directory of the installable WordPress plugin.
+Clone it directly into a directory under `wp-content/plugins/`; do not place
+another plugin folder around it.
 
 ## Installation
 

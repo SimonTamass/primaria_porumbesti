@@ -1,8 +1,8 @@
 # Primăria Porumbești – használati útmutató
 
 Ez a repository közvetlenül a **Primăria Porumbești Elementor Widgets**
-WordPress-plugin gyökérmappája, ugyanúgy, mint a `comuna_agris` projekt. Nincs
-benne külön statikus weboldal vagy további plugin-alkönyvtár.
+WordPress-plugin gyökérmappája. Nincs benne külön statikus weboldal vagy további
+plugin-alkönyvtár.
 
 ## Telepítés
 

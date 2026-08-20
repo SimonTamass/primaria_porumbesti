@@ -1,0 +1,38 @@
+<?php
+$root = dirname( __DIR__ );
+$css = file_get_contents( $root . '/assets/css/frontend.css' );
+$js = file_get_contents( $root . '/assets/js/frontend.js' );
+$accessibility = file_get_contents( $root . '/includes/widgets/class-accessibility-tools.php' );
+$desktop_css = explode( '@media (max-width: 1040px)', $css, 2 )[0];
+
+$checks = array(
+	'accessibility panel follows floating stack' => array( $css, 'bottom: calc(100% + 12px);' ),
+	'accessibility viewport height guard'        => array( $css, 'max-height: min(560px,calc(100dvh - 150px));' ),
+	'accessibility panel scrolling'              => array( $css, 'overscroll-behavior: contain;' ),
+	'open panel state'                           => array( $js, "widget.classList.toggle('is-panel-open', open);" ),
+	'initial back-to-top sync'                   => array( $js, 'syncTop();' ),
+	'escape close'                               => array( $js, "event.key === 'Escape'" ),
+	'button form isolation'                      => array( $accessibility, 'type="button" data-porumbesti-a11y-toggle' ),
+	'tablet homepage gutter'                     => array( $css, 'padding-inline: 24px;' ),
+	'mobile homepage gutter'                     => array( $css, 'padding-inline: 14px;' ),
+);
+
+foreach ( $checks as $label => $check ) {
+	list( $haystack, $needle ) = $check;
+	if ( ! str_contains( $haystack, $needle ) ) {
+		fwrite( STDERR, "Missing {$label}.\n" );
+		exit( 1 );
+	}
+}
+
+if ( ! preg_match( '/\.porumbesti-menu \.sub-menu \{[^}]*display: none;/s', $desktop_css ) ) {
+	fwrite( STDERR, "Desktop submenus still participate in hidden layout.\n" );
+	exit( 1 );
+}
+
+if ( ! preg_match( '/\.porumbesti-menu li\.is-submenu-open > \.sub-menu \{[^}]*display: grid;/s', $desktop_css ) ) {
+	fwrite( STDERR, "Desktop submenu open state is missing.\n" );
+	exit( 1 );
+}
+
+echo "Responsive design smoke passed.\n";

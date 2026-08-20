@@ -255,9 +255,23 @@
         });
         localStorage.setItem('porumbesti-a11y', JSON.stringify(state));
       };
+
+      const setPanel = (open, restoreFocus = false) => {
+        if (!panel || !toggle) return;
+        panel.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        widget.classList.toggle('is-panel-open', open);
+        if (!open && restoreFocus) toggle.focus();
+      };
+
       toggle?.addEventListener('click', () => {
-        panel.hidden = !panel.hidden;
-        toggle.setAttribute('aria-expanded', String(!panel.hidden));
+        setPanel(panel.hidden);
+      });
+      document.addEventListener('click', (event) => {
+        if (panel && !panel.hidden && !widget.contains(event.target)) setPanel(false);
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && panel && !panel.hidden) setPanel(false, true);
       });
       all('[data-porumbesti-scale]', widget).forEach((button) => button.addEventListener('click', () => {
         state.scale = Math.max(90, Math.min(130, state.scale + (button.dataset.porumbestiScale === 'up' ? 10 : -10)));
@@ -266,7 +280,9 @@
       all('[data-porumbesti-a11y]', widget).forEach((button) => button.addEventListener('click', () => { const key = button.dataset.porumbestiA11y; state[key] = !state[key]; apply(); }));
       one('[data-porumbesti-reset]', widget)?.addEventListener('click', () => { state = { scale: 100, contrast: false, grayscale: false, underline: false }; apply(); });
       top?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-      window.addEventListener('scroll', () => top?.classList.toggle('is-visible', window.scrollY > 500), { passive: true });
+      const syncTop = () => top?.classList.toggle('is-visible', window.scrollY > 500);
+      window.addEventListener('scroll', syncTop, { passive: true });
+      syncTop();
       apply();
     });
   }

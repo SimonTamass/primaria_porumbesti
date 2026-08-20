@@ -45,7 +45,7 @@ if ( ! str_contains( $css, 'font-size: 16px; line-height: 1.55' ) || ! str_conta
 	exit( 1 );
 }
 
-if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.13'" ) ) {
+if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.14'" ) ) {
 	fwrite( STDERR, "Plugin version was not bumped.\n" );
 	exit( 1 );
 }

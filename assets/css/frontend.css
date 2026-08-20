@@ -253,6 +253,11 @@
 .porumbesti-person-photo img { width: 100%; height: 100%; max-height: 550px; object-fit: cover; }
 .porumbesti-person-body { padding: 28px; }
 .porumbesti-person-body h2 { margin: 9px 0 3px; color: var(--porumbesti-ink); font: 800 2.2rem/1.1 var(--porumbesti-heading); }
+.porumbesti-person-bio { display: grid; gap: 10px; margin-top: 22px; }
+.porumbesti-person-bio > * { margin-block: 0; }
+.porumbesti-profile-fact { padding: 12px 14px; border-left: 3px solid var(--porumbesti-teal); border-radius: 0 8px 8px 0; background: var(--porumbesti-bg); color: var(--porumbesti-ink); font-weight: 650; line-height: 1.5; }
+.porumbesti-legacy-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; margin: 5px 10px 5px 0; padding: 9px 14px; border: 1px solid var(--porumbesti-brand); border-radius: 8px; background: var(--porumbesti-brand-soft); color: var(--porumbesti-brand) !important; font: 800 .86rem/1.25 var(--porumbesti-body); text-decoration: none !important; }
+.porumbesti-legacy-button:hover { background: var(--porumbesti-brand); color: #fff !important; }
 .porumbesti-tag { display: inline-flex; padding: 5px 10px; border-radius: 99px; background: var(--porumbesti-brand-soft); color: var(--porumbesti-brand); font-size: .72rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
 .porumbesti-detail-list { display: grid; gap: 10px; margin-top: 20px; }
 .porumbesti-detail-list > * { display: flex; align-items: center; gap: 13px; color: var(--porumbesti-ink); text-decoration: none; }

@@ -20,6 +20,7 @@ $applier = $reflection->newInstanceWithoutConstructor();
 $normalize = $reflection->getMethod( 'normalize_legacy_content' );
 $category = $reflection->getMethod( 'legacy_category_slug' );
 $queries = $reflection->getMethod( 'legacy_post_queries' );
+$integrated_profile = $reflection->getMethod( 'integrated_profile_content' );
 
 $legacy = '[vc_row][vc_column_text]<h1>Galeria Foto</h1><p>Text păstrat.</p>[/vc_column_text][masonry_blog order="DESC" category="galeria-foto-2018"][/vc_row]';
 $normalized = $normalize->invoke( $applier, $legacy );
@@ -50,6 +51,39 @@ $nested = '<div class="porumbesti-header-wrap">Duplicated header</div><div class
 $normalized_nested = $normalize->invoke( $applier, $nested );
 if ( str_contains( $normalized_nested, 'Duplicated header' ) || str_contains( $normalized_nested, 'Duplicated footer' ) || ! str_contains( $normalized_nested, 'Conținut real.' ) ) {
 	fwrite( STDERR, "Nested Elementor content extraction failed.\n" );
+	exit( 1 );
+}
+
+$mayor_source = '<h2>Primar</h2><figure class="porumbesti-legacy-media"><img class="wp-image-51" src="https://example.test/Toth-Zoltan3-1-739x1024.jpg" alt="Toth Zoltan"></figure><h4>- Tóth Zoltán</h4><h4>- Data naşterii: 1973. 11.27.</h4><h4>- Studii: Economist Facultatea de științe Economice Vasile Goldis</h4><p><a class="porumbesti-legacy-button" href="https://example.test/DA-Toth-Zoltan-2025.pdf">Declaratia de avere 2025</a><a class="porumbesti-legacy-button" href="https://example.test/DI-Toth-Zoltan-2025.pdf">Declaratie de interese 2025</a></p>';
+$profile_content = $integrated_profile->invoke(
+	$applier,
+	$mayor_source,
+	array( 'id' => 51, 'url' => 'https://example.test/Toth-Zoltan3-1.jpg' ),
+	array( 'Primar', 'Tóth Zoltán' )
+);
+
+if ( str_contains( $profile_content, '<figure' ) || str_contains( $profile_content, '<img' ) || str_contains( $profile_content, '<h2>Primar' ) || str_contains( $profile_content, '>Tóth Zoltán<' ) ) {
+	fwrite( STDERR, "Reused mayor identity or portrait was not deduplicated.\n" );
+	exit( 1 );
+}
+
+$preserved_profile_details = array(
+	'Data naşterii: 1973. 11.27.',
+	'Studii: Economist Facultatea de științe Economice Vasile Goldis',
+	'https://example.test/DA-Toth-Zoltan-2025.pdf',
+	'https://example.test/DI-Toth-Zoltan-2025.pdf',
+	'Declaratia de avere 2025',
+	'Declaratie de interese 2025',
+);
+foreach ( $preserved_profile_details as $detail ) {
+	if ( ! str_contains( $profile_content, $detail ) ) {
+		fwrite( STDERR, "Mayor source detail was not preserved: {$detail}\n" );
+		exit( 1 );
+	}
+}
+
+if ( 2 !== substr_count( $profile_content, 'porumbesti-profile-fact' ) ) {
+	fwrite( STDERR, "Mayor facts were not converted into profile rows.\n" );
 	exit( 1 );
 }
 

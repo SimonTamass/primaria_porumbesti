@@ -1585,9 +1585,85 @@ final class Template_Applier {
 		return array( 'title' => $copy['accessibility'], 'position' => 'right', 'text_size_label' => $copy['text_size'], 'contrast_label' => $copy['contrast'], 'grayscale_label' => $copy['grayscale'], 'underline_label' => $copy['underline'], 'reset_label' => $copy['reset'], 'options_label' => $copy['options'], 'back_to_top_label' => $copy['back_top'] );
 	}
 
+	private function content_label_key( string $content ): string {
+		$content = html_entity_decode( wp_strip_all_tags( $content ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$content = preg_replace( '/^[\s\p{Pd}:]+|[\s\p{Pd}:]+$/u', '', str_replace( "\xc2\xa0", ' ', $content ) ) ?? '';
+		$content = preg_replace( '/\s+/u', ' ', $content ) ?? $content;
+		$content = function_exists( 'remove_accents' ) ? remove_accents( $content ) : $content;
+		return strtolower( trim( $content ) );
+	}
+
+	private function content_without_duplicate_headings( string $content, array $labels ): string {
+		$keys = array_values( array_filter( array_map( fn( string $label ): string => $this->content_label_key( $label ), $labels ) ) );
+		$content = preg_replace_callback(
+			'/<h([1-6])\b[^>]*>(.*?)<\/h\1>/is',
+			function ( array $matches ) use ( $keys ): string {
+				$key = $this->content_label_key( $matches[2] );
+				return '' === $key || in_array( $key, $keys, true ) ? '' : $matches[0];
+			},
+			$content
+		) ?? $content;
+		return trim( preg_replace( '/<p\b[^>]*>\s*(?:&nbsp;|\x{00a0})?\s*<\/p>/iu', '', $content ) ?? $content );
+	}
+
+	private function media_url_key( string $url ): string {
+		$path = (string) parse_url( html_entity_decode( $url, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), PHP_URL_PATH );
+		$name = strtolower( rawurldecode( basename( $path ) ) );
+		return preg_replace( '/-\d+x\d+(?=\.[a-z0-9]+$)/i', '', $name ) ?? $name;
+	}
+
+	private function markup_uses_media( string $markup, array $media ): bool {
+		$id = (int) ( $media['id'] ?? 0 );
+		if ( $id && preg_match( '/\bwp-image-' . $id . '\b/i', $markup ) ) {
+			return true;
+		}
+		$key = $this->media_url_key( (string) ( $media['url'] ?? '' ) );
+		if ( '' === $key || ! preg_match_all( '/(?:src|data-src)\s*=\s*(["\'])(.*?)\1/is', $markup, $matches ) ) {
+			return false;
+		}
+		foreach ( $matches[2] as $url ) {
+			if ( $key === $this->media_url_key( $url ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function content_without_reused_media( string $content, array $media ): string {
+		if ( empty( $media['id'] ) && empty( $media['url'] ) ) {
+			return $content;
+		}
+		$content = preg_replace_callback(
+			'/<figure\b[^>]*>.*?<\/figure>/is',
+			fn( array $matches ): string => $this->markup_uses_media( $matches[0], $media ) ? '' : $matches[0],
+			$content
+		) ?? $content;
+		$content = preg_replace_callback(
+			'/<img\b[^>]*>/is',
+			fn( array $matches ): string => $this->markup_uses_media( $matches[0], $media ) ? '' : $matches[0],
+			$content
+		) ?? $content;
+		return trim( preg_replace( '/<a\b[^>]*>\s*<\/a>/is', '', $content ) ?? $content );
+	}
+
+	private function integrated_profile_content( string $content, array $media, array $duplicate_labels ): string {
+		$content = $this->content_without_reused_media( $content, $media );
+		$content = $this->content_without_duplicate_headings( $content, $duplicate_labels );
+		$content = preg_replace_callback(
+			'/<h[1-6]\b[^>]*>(.*?)<\/h[1-6]>/is',
+			static function ( array $matches ): string {
+				$value = preg_replace( '/^\s*[\p{Pd}]\s*/u', '', $matches[1] ) ?? $matches[1];
+				return '<p class="porumbesti-profile-fact">' . $value . '</p>';
+			},
+			$content
+		) ?? $content;
+		return trim( $content );
+	}
+
 	private function original_content_sections( \WP_Post $page, string $language, string $seed ): array {
 		$source_content = $this->original_page_content( $page );
 		$normalized_content = $this->normalize_legacy_content( $source_content );
+		$normalized_content = $this->content_without_duplicate_headings( $normalized_content, array( get_the_title( $page ) ) );
 		$has_visible_content = '' !== trim( wp_strip_all_tags( $normalized_content ) )
 			|| (bool) preg_match( '/<(?:a|audio|figure|iframe|img|table|video)\b/i', $normalized_content );
 		if ( ! $has_visible_content ) {
@@ -1595,52 +1671,22 @@ final class Template_Applier {
 		}
 
 		$is_hungarian = 'hu' === $language;
-		$media_items = $this->legacy_media_items( $page, $source_content );
-		$unplaced_media = $this->unplaced_media_items( $media_items, $normalized_content, array() );
-		$sections = array(
-			$this->section(
-				$seed . '-original-heading',
-				$is_hungarian ? 'Teljes tartalmi megőrzés' : 'Conținut păstrat integral',
-				$is_hungarian ? 'Az eredeti oldalon közzétett minden információ' : 'Toate informațiile publicate pe pagina originală',
-				$is_hungarian ? 'A szövegek, táblázatok, irat- és médiahivatkozások az eredeti tartalomból származnak.' : 'Textele, tabelele și legăturile către documente sau materiale media provin din conținutul original.',
-				'',
-				'',
-				'light',
-				'#ffffff'
-			),
+		return array(
 			$this->container(
-				$seed . '-original-content',
+				$seed . '-additional-content',
 				array(
-					$this->widget( $seed . '-original-content-widget', 'porumbesti-content-media', array(
-						'kicker'      => $is_hungarian ? 'Eredeti nyilvános tartalom' : 'Conținut public original',
-						'title'       => get_the_title( $page ),
+					$this->widget( $seed . '-additional-content-widget', 'porumbesti-content-media', array(
+						'kicker'      => $is_hungarian ? 'Teljes körű tájékoztatás' : 'Informații complete',
+						'title'       => $is_hungarian ? 'Részletek és dokumentumok' : 'Detalii și documente',
 						'description' => '',
 						'content'     => $normalized_content,
 						'image'       => array( 'id' => 0, 'url' => '' ),
 						'image_side'  => 'right',
 					) ),
 				),
-				array( 'background_background' => 'classic', 'background_color' => '#ffffff', 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) )
+				array( 'background_background' => 'classic', 'background_color' => '#ffffff', 'padding' => array( 'unit' => 'px', 'top' => '72', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) )
 			),
 		);
-
-		if ( $unplaced_media ) {
-			$sections[] = $this->container(
-				$seed . '-original-media',
-				array(
-					$this->widget( $seed . '-original-media-widget', 'porumbesti-photo-gallery', array(
-						'kicker'      => $is_hungarian ? 'Eredeti média' : 'Media originală',
-						'title'       => $is_hungarian ? 'Az eredeti oldal kapcsolódó képei' : 'Imagini asociate paginii originale',
-						'description' => '',
-						'items_list'  => $this->repeater( $seed . '-original-media-items', $unplaced_media ),
-						'columns'     => count( $unplaced_media ) > 2 ? '3' : '2',
-					) ),
-				),
-				array( 'background_background' => 'classic', 'background_color' => '#ffffff', 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) )
-			);
-		}
-
-		return $sections;
 	}
 
 	private function specialized_ro_page_data( \WP_Post $page ): array {
@@ -1794,7 +1840,7 @@ final class Template_Applier {
 				) ),
 			) ),
 		), array( 'gap' => array( 'unit' => 'px', 'size' => 32, 'sizes' => array() ), 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) ) );
-		$data[] = $this->section( $seed . '-decisions-heading', 'Arhivă actualizată', 'Hotărâri recente publicate online', '', 'Arhiva originală', $routes['decisions'], 'light', '#ffffff' );
+		$data[] = $this->section( $seed . '-decisions-heading', 'Arhivă actualizată', 'Hotărâri recente publicate online', '', 'Arhiva hotărârilor', $routes['decisions'], 'light', '#ffffff' );
 		$data[] = $this->container( $seed . '-decisions', array(
 			$this->widget( $seed . '-decisions-widget', 'porumbesti-news-grid', array(
 				'post_type' => 'post', 'category' => 'hotarari-ale-consiului-local-ro', 'language' => 'ro', 'count' => 3, 'columns' => '3', 'orderby' => 'date',
@@ -1842,11 +1888,11 @@ final class Template_Applier {
 		), array( 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) ) );
 		$data[] = $this->container( $seed . '-forms', array(
 			$this->widget( $seed . '-forms-widget', 'porumbesti-content-media', array(
-				'kicker' => 'Formulare', 'title' => 'Formulare tipizate', 'description' => 'Conținutul original al paginii rămâne disponibil în noua structură.',
+				'kicker' => 'Formulare', 'title' => 'Formulare tipizate', 'description' => 'Cereri, formulare și legături utile, organizate în noua structură.',
 				'content' => $source, 'image' => $this->media(), 'image_side' => 'right',
 			) ),
 		), array( 'background_background' => 'classic', 'background_color' => '#ffffff', 'padding' => array( 'unit' => 'px', 'top' => '72', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) ) );
-		$data[] = $this->section( $seed . '-other-heading', 'Alte secțiuni din site-ul original', 'Galerie, firme și legislație' );
+		$data[] = $this->section( $seed . '-other-heading', 'Alte secțiuni utile', 'Galerie, firme și legislație' );
 		$data[] = $this->container( $seed . '-other', array(
 			$this->widget( $seed . '-other-widget', 'porumbesti-services-grid', array(
 				'columns' => '3',
@@ -2441,6 +2487,8 @@ final class Template_Applier {
 		$source_content = $this->original_page_content( $page );
 		$media_items = $this->legacy_media_items( $page, $source_content );
 		$mayor_photo = $media_items ? $media_items[0]['image'] : $this->media();
+		$normalized_content = $this->normalize_legacy_content( $source_content );
+		$profile_bio = $this->integrated_profile_content( $normalized_content, $mayor_photo, array( get_the_title( $page ), 'Primar', 'Tóth Zoltán' ) );
 		$data = $this->redesign_page_start(
 			$page,
 			$seed,
@@ -2452,7 +2500,7 @@ final class Template_Applier {
 		$data[] = $this->container( $seed . '-profile', array(
 			$this->widget( $seed . '-profile-widget', 'porumbesti-person-profile', array(
 				'photo' => $mayor_photo, 'role' => 'Primar', 'name' => 'Tóth Zoltán', 'subtitle' => 'Primarul Comunei Porumbești',
-				'bio' => '<p>Primarul Comunei Porumbești.</p>', 'phone' => '0361 525 288', 'email' => 'primar@primariaporumbesti.ro', 'office' => '',
+				'bio' => $profile_bio, 'phone' => '0361 525 288', 'email' => 'primar@primariaporumbesti.ro', 'office' => '',
 			) ),
 		), array( 'padding' => array( 'unit' => 'px', 'top' => '72', 'right' => '0', 'bottom' => '32', 'left' => '0', 'isLinked' => false ) ) );
 		$data[] = $this->container( $seed . '-schedule', array(
@@ -2468,7 +2516,7 @@ final class Template_Applier {
 			$this->widget( $seed . '-links-widget', 'porumbesti-link-list', array(
 				'title' => 'Conducere',
 				'items_list' => $this->repeater( $seed . '-link-items', array(
-					array( 'icon' => 'CP', 'label' => 'Cuvântul primarului', 'meta' => 'Arhivă originală', 'url' => $this->link( $this->page_url( array( 'cuvantul-primarului' ), $routes['mayor'] ) ) ),
+					array( 'icon' => 'CP', 'label' => 'Cuvântul primarului', 'meta' => 'Mesaj publicat', 'url' => $this->link( $this->page_url( array( 'cuvantul-primarului' ), $routes['mayor'] ) ) ),
 					array( 'icon' => 'ROF', 'label' => 'Regulamentul de organizare', 'meta' => 'Primăria Comunei Porumbești', 'url' => $this->link( $this->page_url( array( 'regulamentul-de-organizare-si-functionare-al-primariei-comunei-porumbesti' ), $routes['departments'] ) ) ),
 				) ),
 			) ),
@@ -2487,7 +2535,6 @@ final class Template_Applier {
 				) ),
 			) ),
 		), array( 'background_background' => 'classic', 'background_color' => '#ffffff', 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) ) );
-		$data = array_merge( $data, $this->original_content_sections( $page, 'ro', $seed ) );
 		$data[] = $this->redesign_page_end( $seed );
 		return $data;
 	}
@@ -2498,7 +2545,7 @@ final class Template_Applier {
 		$media_items = $this->legacy_media_items( $page, $source_content );
 		$mayor_photo = $media_items ? $media_items[0]['image'] : $this->media();
 		$normalized_content = $this->normalize_legacy_content( $source_content );
-		$unplaced_media = $this->unplaced_media_items( $media_items, $normalized_content, $mayor_photo );
+		$profile_bio = $this->integrated_profile_content( $normalized_content, $mayor_photo, array( get_the_title( $page ), 'Polgármester', 'Primar', 'Tóth Zoltán' ) );
 		$data = array(
 			$this->container( 'mayor-hu-header', array(
 				$this->widget( 'mayor-hu-header-widget', 'porumbesti-site-header', $this->header_settings( $page, 'hu', $routes, 'mayor-hu-header' ) ),
@@ -2508,15 +2555,9 @@ final class Template_Applier {
 				$this->widget( 'mayor-hu-hero-widget', 'porumbesti-page-hero', array( 'kicker' => 'Polgármesteri Hivatal', 'title' => get_the_title( $page ), 'description' => '', 'background' => $this->design_media( '2018/07/hatter-13.jpg', 'mayor-hu-page-hero' ), 'parent_label' => 'Kezdőlap', 'parent_link' => $this->link( $routes['home_hu'] ), 'current_label' => get_the_title( $page ) ) ),
 			), array( 'content_width' => 'full' ) ),
 			$this->container( 'mayor-hu-profile', array(
-				$this->widget( 'mayor-hu-profile-widget', 'porumbesti-person-profile', array( 'photo' => $mayor_photo, 'role' => 'Polgármester', 'name' => 'Tóth Zoltán', 'subtitle' => 'Kökényesd község polgármestere', 'bio' => '<p>Kökényesd község polgármestere.</p>', 'phone' => '0361 525 288', 'email' => 'primar@primariaporumbesti.ro', 'office' => 'Időpont-egyeztetés: 0361 525 288' ) ),
+				$this->widget( 'mayor-hu-profile-widget', 'porumbesti-person-profile', array( 'photo' => $mayor_photo, 'role' => 'Polgármester', 'name' => 'Tóth Zoltán', 'subtitle' => 'Kökényesd község polgármestere', 'bio' => $profile_bio, 'phone' => '0361 525 288', 'email' => 'primar@primariaporumbesti.ro', 'office' => 'Időpont-egyeztetés: 0361 525 288' ) ),
 			), array( 'padding' => array( 'unit' => 'px', 'top' => '70', 'right' => '0', 'bottom' => '32', 'left' => '0', 'isLinked' => false ) ) ),
-			$this->container( 'mayor-hu-content', array(
-				$this->widget( 'mayor-hu-content-widget', 'porumbesti-content-media', array( 'kicker' => '', 'title' => '', 'description' => '', 'content' => $normalized_content, 'image' => $this->media(), 'image_side' => 'right' ) ),
-			), array( 'padding' => array( 'unit' => 'px', 'top' => '24', 'right' => '0', 'bottom' => '64', 'left' => '0', 'isLinked' => false ) ) ),
 		);
-		if ( $unplaced_media ) {
-			$data[] = $this->container( 'mayor-hu-media', array( $this->widget( 'mayor-hu-media-widget', 'porumbesti-photo-gallery', array( 'kicker' => 'Média', 'title' => 'Kapcsolódó képek', 'description' => '', 'items_list' => $this->repeater( 'mayor-hu-media-items', $unplaced_media ), 'columns' => count( $unplaced_media ) > 2 ? '3' : '2' ) ) ), array( 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '64', 'left' => '0', 'isLinked' => false ) ) );
-		}
 		$data[] = $this->container( 'mayor-hu-footer', array(
 			$this->widget( 'mayor-hu-footer-widget', 'porumbesti-site-footer', $this->footer_settings( 'hu', $routes, 'mayor-hu-footer' ) ),
 			$this->widget( 'mayor-hu-accessibility-widget', 'porumbesti-accessibility', $this->accessibility_settings( 'hu' ) ),

@@ -45,7 +45,7 @@ if ( ! str_contains( $css, 'font-size: 16px; line-height: 1.55' ) || ! str_conta
 	exit( 1 );
 }
 
-if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.16'" ) ) {
+if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.17'" ) ) {
 	fwrite( STDERR, "Plugin version was not bumped.\n" );
 	exit( 1 );
 }
@@ -68,6 +68,27 @@ if ( str_contains( $home_ro_block, 'original_content_sections' ) || str_contains
 if ( ! str_contains( $applier, "original_content_sections( \$page, 'ro', \$seed )" ) ) {
 	fwrite( STDERR, "Internal-page legacy content preservation is missing.\n" );
 	exit( 1 );
+}
+
+foreach ( array( 'Conținut păstrat integral', 'Toate informațiile publicate pe pagina originală', 'Conținut public original', 'Media originală', 'Teljes tartalmi megőrzés', 'Eredeti nyilvános tartalom', 'Eredeti média', 'Arhivă originală', 'site-ul original', 'Conținutul original al paginii' ) as $legacy_label ) {
+	if ( str_contains( $applier, $legacy_label ) ) {
+		fwrite( STDERR, "Archive-style public label remains: {$legacy_label}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'function integrated_profile_content', "'bio' => \$profile_bio", 'Informații complete', 'Detalii și documente' ) as $needle ) {
+	if ( ! str_contains( $applier, $needle ) ) {
+		fwrite( STDERR, "Integrated source-content presentation is incomplete: {$needle}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( '.porumbesti-person-bio', '.porumbesti-profile-fact', '.porumbesti-legacy-button' ) as $needle ) {
+	if ( ! str_contains( $css, $needle ) ) {
+		fwrite( STDERR, "Integrated profile styling is incomplete: {$needle}.\n" );
+		exit( 1 );
+	}
 }
 
 if ( ! str_contains( $applier, 'function normalize_legacy_content' ) || ! str_contains( $applier, 'function gallery_items' ) ) {

@@ -782,7 +782,10 @@ final class Template_Applier {
 			'phones'        => $this->page_url( array( 'telefone-utile' ), '/ro/telefone-utile/' ),
 			'legislation'   => $this->page_url( array( 'legislatie' ), '/ro/legislatie/' ),
 			'portal'        => self::PORTAL_URL,
-			'galleries'     => home_url( '/hu/category/galeria-foto/' ),
+			// The live gallery archive exists only in Hungarian. Keep the Romanian
+			// interface on an existing Romanian content page instead of crossing
+			// languages to the Hungarian category archive.
+			'galleries'     => $this->page_url( array( 'galeria-foto' ), '/ro/prezentarea-comunei-porumbesti/' ),
 		);
 		return $this->routes_cache['ro'];
 	}
@@ -1517,7 +1520,7 @@ final class Template_Applier {
 		}
 		return array(
 			'official' => 'Site oficial al Primăriei Comunei Porumbești, județul Satu Mare, România', 'trust' => 'Conexiune securizată',
-			'brand_subtitle' => 'Primăria · Kökényesd Község', 'cta' => 'Monitorul Oficial', 'home' => 'Acasă',
+			'brand_subtitle' => 'Primăria Comunei Porumbești', 'cta' => 'Monitorul Oficial', 'home' => 'Acasă',
 			'skip' => 'Sari la conținut', 'language' => 'Alege limba', 'nav' => 'Navigație principală', 'search' => 'Caută',
 			'menu_open' => 'Deschide meniul', 'menu_close' => 'Închide meniul', 'submenu' => 'Deschide submeniul pentru %s',
 			'search_title' => 'Căutare în portal', 'search_placeholder' => 'Căutați documente, anunțuri, servicii…', 'search_button' => 'Caută', 'close' => 'Închide',
@@ -2216,10 +2219,10 @@ final class Template_Applier {
 						array(
 							'official_text'  => 'Site oficial al Primăriei Comunei Porumbești, județul Satu Mare, România',
 							'trust_text'     => is_ssl() ? 'Conexiune securizată' : '',
-							'mail_url'       => $this->link( 'mailto:primar@primariaporumbesti.ro' ),
+							'mail_url'       => $this->link( self::WEBMAIL_URL ),
 							'logo'           => $this->brand_logo(),
 							'brand_title'    => 'Comuna Porumbești',
-							'brand_subtitle' => 'Primăria · Kökényesd Község',
+							'brand_subtitle' => 'Primăria Comunei Porumbești',
 							'home_url'       => $this->link( $routes['home_ro'] ),
 							'menu_id'        => $menu_id,
 							'cta_text'       => 'Monitorul Oficial',

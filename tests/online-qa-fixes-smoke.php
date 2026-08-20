@@ -11,6 +11,10 @@ $checks = array(
 	'assets declarations category route' => array( $applier, "/ro/category/declaratie-de-avere/" ),
 	'official decisions category route' => array( $applier, "/ro/category/hotarari-ale-consiului-local-ro/" ),
 	'Hungarian gallery category route' => array( $applier, "/hu/category/galeria-foto/" ),
+	'Romanian gallery fallback route' => array( $applier, "/ro/prezentarea-comunei-porumbesti/" ),
+	'Romanian interface subtitle' => array( $applier, "'brand_subtitle' => 'Primăria Comunei Porumbești'" ),
+	'Named empty submenu fallback' => array( file_get_contents( $root . '/includes/widgets/class-site-header.php' ), '$empty_submenu_label' ),
+	'Romanian footer subtitle' => array( file_get_contents( $root . '/includes/widgets/class-site-footer.php' ), 'Primăria Comunei Porumbești' ),
 	'dynamic executive route' => array( $applier, "array( 'dispozitiile-autoritatii-executive' )" ),
 	'dynamic document library' => array( $applier, "'porumbesti-document-library'" ),
 	'direct child-benefit PDF' => array( $applier, "/wp-content/uploads/2016/11/acordarea-indemizatiei-de-crestere-a-copilului.pdf" ),
@@ -24,6 +28,14 @@ foreach ( $checks as $label => $check ) {
 		fwrite( STDERR, "Missing {$label}.\n" );
 		exit( 1 );
 	}
+}
+
+$ro_routes_start = strpos( $applier, "'home_ro'       =>" );
+$ro_routes_end = false !== $ro_routes_start ? strpos( $applier, "\n\t\t);", $ro_routes_start ) : false;
+$ro_routes = false !== $ro_routes_start && false !== $ro_routes_end ? substr( $applier, $ro_routes_start, $ro_routes_end - $ro_routes_start ) : '';
+if ( str_contains( $ro_routes, "/hu/category/galeria-foto/" ) ) {
+	fwrite( STDERR, "Romanian routes must not point to the Hungarian gallery archive.\n" );
+	exit( 1 );
 }
 
 $forbidden = array(

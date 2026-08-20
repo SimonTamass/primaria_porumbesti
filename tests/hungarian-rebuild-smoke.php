@@ -21,7 +21,7 @@ $checks = array(
 	'verified public-info route'  => array( $applier, "array( 'public_info', 'announcements' )" ),
 	'hungarian current language'  => array( $applier, "array( 'code' => 'HU', 'label' => 'Magyar'" ),
 	'hungarian home body class'   => array( $assets, "array( 'prima', 'fooldal' )" ),
-	'localized submenu labels'    => array( $header, 'new Header_Menu_Walker( $s[\'submenu_label\'] )' ),
+	'localized submenu labels'    => array( $header, 'new Header_Menu_Walker( $s[\'submenu_label\'], $s[\'language_label\'] )' ),
 	'localized footer labels'     => array( $footer, "\$s['monitor_link_text']" ),
 	'language-preserving search'  => array( $search, 'name="lang"' ),
 	'language-preserving hero'    => array( $home_hero, 'search_language' ),

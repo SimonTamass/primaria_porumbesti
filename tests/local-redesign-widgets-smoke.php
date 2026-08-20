@@ -21,7 +21,7 @@ $checks = array(
 	'contact form widget' => array( $applier, "'porumbesti-contact-form'" ),
 	'local home hero media' => array( $applier, "'2018/07/hatter-13.jpg'" ),
 	'local page hero media' => array( $applier, "'2018/07/hatter-13.jpg'" ),
-	'bilingual Romanian brand' => array( $applier, "'Primăria · Kökényesd Község'" ),
+	'Romanian brand' => array( $applier, "'Primăria Comunei Porumbești'" ),
 	'official email action' => array( $applier, 'mailto:primar@primariaporumbesti.ro' ),
 	'Romanian municipality route' => array( $applier, "'location'      => \$this->page_url( array( 'prezentarea-comunei-porumbesti' )" ),
 	'Romanian departments route' => array( $applier, "'departments'   => \$this->page_url( array( 'departamente' )" ),

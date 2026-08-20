@@ -11,9 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Header_Menu_Walker extends \Walker_Nav_Menu {
 	private string $submenu_label;
+	private string $empty_submenu_label;
 
-	public function __construct( string $submenu_label = 'Deschide submeniul pentru %s' ) {
+	public function __construct( string $submenu_label = 'Deschide submeniul pentru %s', string $empty_submenu_label = 'Selector limbă' ) {
 		$this->submenu_label = $submenu_label;
+		$this->empty_submenu_label = $empty_submenu_label;
 	}
 
 	public function start_el( &$output, $data_object, $depth = 0, $args = null, $current_object_id = 0 ): void {
@@ -24,6 +26,9 @@ final class Header_Menu_Walker extends \Walker_Nav_Menu {
 		}
 
 		$title = wp_strip_all_tags( $data_object->title );
+		if ( '' === trim( $title ) ) {
+			$title = $this->empty_submenu_label;
+		}
 		$label = str_contains( $this->submenu_label, '%s' )
 			? str_replace( '%s', $title, $this->submenu_label )
 			: trim( $this->submenu_label . ' ' . $title );
@@ -45,7 +50,7 @@ final class Site_Header extends Base {
 		$this->add_control( 'logo', array( 'label' => __( 'Logo', 'primaria-porumbesti' ), 'type' => Controls_Manager::MEDIA ) );
 		$this->add_group_control( Group_Control_Image_Size::get_type(), array( 'name' => 'logo', 'default' => 'thumbnail' ) );
 		$this->add_control( 'brand_title', array( 'label' => __( 'Nume instituție', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Comuna Porumbești' ) );
-		$this->add_control( 'brand_subtitle', array( 'label' => __( 'Subtitlu', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Primăria · Kökényesd Község' ) );
+		$this->add_control( 'brand_subtitle', array( 'label' => __( 'Subtitlu', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Primăria Comunei Porumbești' ) );
 		$this->add_control( 'home_url', array( 'label' => __( 'Link logo', 'primaria-porumbesti' ), 'type' => Controls_Manager::URL, 'default' => array( 'url' => '/' ) ) );
 		$this->add_control( 'menu_id', array( 'label' => __( 'Meniu WordPress', 'primaria-porumbesti' ), 'type' => Controls_Manager::SELECT, 'options' => self::menus() ) );
 		$this->add_control( 'cta_text', array( 'label' => __( 'Text buton', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Monitorul Oficial' ) );
@@ -100,7 +105,7 @@ final class Site_Header extends Base {
 				<nav id="<?php echo esc_attr( $nav_id ); ?>" class="porumbesti-main-nav" aria-label="<?php echo esc_attr( $s['nav_label'] ); ?>">
 				<?php
 				if ( $s['menu_id'] ) {
-					wp_nav_menu( array( 'menu' => (int) $s['menu_id'], 'container' => false, 'menu_class' => 'porumbesti-menu', 'fallback_cb' => false, 'depth' => 4, 'walker' => new Header_Menu_Walker( $s['submenu_label'] ) ) );
+					wp_nav_menu( array( 'menu' => (int) $s['menu_id'], 'container' => false, 'menu_class' => 'porumbesti-menu', 'fallback_cb' => false, 'depth' => 4, 'walker' => new Header_Menu_Walker( $s['submenu_label'], $s['language_label'] ) ) );
 				} elseif ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 					echo '<div class="porumbesti-editor-note">' . esc_html__( 'Selectați un meniu WordPress în panoul din stânga.', 'primaria-porumbesti' ) . '</div>';
 				}

@@ -15,7 +15,7 @@ $checks = array(
 	'namespaced sticky control'  => array( $header, "add_control( 'porumbesti_sticky'" ),
 	'accessible submenu walker'  => array( $header, 'class Header_Menu_Walker' ),
 	'submenu toggle control'     => array( $header, 'data-porumbesti-submenu-toggle' ),
-	'localized submenu control'  => array( $header, "new Header_Menu_Walker( \$s['submenu_label'] )" ),
+	'localized submenu control'  => array( $header, "new Header_Menu_Walker( \$s['submenu_label'], \$s['language_label'] )" ),
 	'safe submenu formatting'    => array( $header, "str_replace( '%s', \$title, \$this->submenu_label )" ),
 	'home skip-link target'      => array( $home_hero, 'id="main-content"' ),
 	'page skip-link target'      => array( $page_hero, 'id="main-content"' ),

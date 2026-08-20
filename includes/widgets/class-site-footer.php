@@ -17,7 +17,7 @@ final class Site_Footer extends Base {
 	protected function register_controls(): void {
 		$this->start_controls_section( 'brand', array( 'label' => __( 'Instituție', 'primaria-porumbesti' ) ) );
 		$this->add_control( 'title', array( 'label' => __( 'Titlu', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Comuna Porumbești' ) );
-		$this->add_control( 'subtitle', array( 'label' => __( 'Subtitlu', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Primăria · Kökényesd Község' ) );
+		$this->add_control( 'subtitle', array( 'label' => __( 'Subtitlu', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXT, 'default' => 'Primăria Comunei Porumbești' ) );
 		$this->add_control( 'description', array( 'label' => __( 'Descriere', 'primaria-porumbesti' ), 'type' => Controls_Manager::TEXTAREA, 'default' => 'Portal oficial pentru cetățeni, documente publice și comunicări administrative.' ) );
 		$this->end_controls_section();
 		$this->start_controls_section( 'columns', array( 'label' => __( 'Coloane de linkuri', 'primaria-porumbesti' ) ) );

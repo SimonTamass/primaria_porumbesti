@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ro">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Porumbești control alignment fixture</title>
+	<link rel="stylesheet" href="../../assets/css/fonts.css">
+	<link rel="stylesheet" href="../../assets/css/frontend.css">
+	<style>
+		body { min-height: 100vh; display: grid; place-items: center; margin: 0; background: #f3f7f9; }
+		.qa-stage { display: grid; gap: 28px; justify-items: end; }
+		.qa-header-controls { display: flex; gap: 8px; }
+		.qa-header-controls svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+		.porumbesti-a11y { position: static; display: flex; align-items: end; gap: 12px; }
+		.porumbesti-a11y-panel { position: static; }
+	</style>
+</head>
+<body>
+	<main class="qa-stage">
+		<div class="qa-header-controls">
+			<button class="porumbesti-icon-button" type="button" aria-label="Căutare"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 5 5"></path></svg></button>
+			<button class="porumbesti-icon-button" type="button" aria-label="Meniu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+		</div>
+		<div class="porumbesti-a11y porumbesti-a11y-right is-panel-open">
+			<div class="porumbesti-a11y-panel" role="dialog" aria-labelledby="qa-a11y-title">
+				<h2 id="qa-a11y-title">Accesibilitate</h2>
+				<div class="porumbesti-a11y-row"><span>Mărime text</span><span class="porumbesti-a11y-scale"><button type="button" data-porumbesti-scale="down">−</button><strong data-porumbesti-scale-label>100%</strong><button type="button" data-porumbesti-scale="up">+</button></span></div>
+				<div class="porumbesti-a11y-row"><span>Contrast ridicat</span><button type="button" class="porumbesti-switch" aria-pressed="false"><i aria-hidden="true"></i></button></div>
+				<div class="porumbesti-a11y-row"><span>Tonuri de gri</span><button type="button" class="porumbesti-switch" aria-pressed="false"><i aria-hidden="true"></i></button></div>
+				<div class="porumbesti-a11y-row"><span>Linkuri subliniate</span><button type="button" class="porumbesti-switch" aria-pressed="false"><i aria-hidden="true"></i></button></div>
+				<button type="button" class="porumbesti-button porumbesti-button-soft">Resetează setările</button>
+			</div>
+			<div class="porumbesti-floating"><button type="button" aria-label="Opțiuni de accesibilitate"><svg class="porumbesti-a11y-toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.5" r="2"></circle><path d="M5 8.5c4.5 1.5 9.5 1.5 14 0M12 10v10M8.5 20 12 14l3.5 6"></path></svg></button></div>
+		</div>
+	</main>
+</body>
+</html>

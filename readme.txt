@@ -3,7 +3,7 @@ Contributors: primariaporumbesti
 Tags: elementor, municipality, multilingual, documents, accessibility
 Requires at least: 6.4
 Requires PHP: 8.0
-Stable tag: 1.0.15
+Stable tag: 1.0.16
 License: GPLv2 or later
 
 A bilingual 24-widget Elementor system for the Porumbesti / Kokenyesd municipal portal.
@@ -33,6 +33,11 @@ The contact endpoint includes a nonce, honeypot, signed recipient validation, se
 5. Use Tools > Comuna Porumbesti rebuild only on a backed-up local or staging copy.
 
 == Changelog ==
+
+= 1.0.16 =
+* Centers the accessibility icon and the text-size controls on explicit grid tracks instead of inherited button baselines.
+* Resets Elementor's inherited padding on icon-only header, search and floating controls so their glyphs remain geometrically centered.
+* Adds a visual control-alignment fixture and regression assertions for the corrected UI geometry.
 
 = 1.0.15 =
 * Extends the homepage content gutter to intermediate desktop widths so the deployed layout keeps the same 24-pixel shell as the local design.

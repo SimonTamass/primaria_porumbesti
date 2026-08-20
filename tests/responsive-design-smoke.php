@@ -3,6 +3,7 @@ $root = dirname( __DIR__ );
 $css = file_get_contents( $root . '/assets/css/frontend.css' );
 $js = file_get_contents( $root . '/assets/js/frontend.js' );
 $accessibility = file_get_contents( $root . '/includes/widgets/class-accessibility-tools.php' );
+$alignment_fixture = file_get_contents( $root . '/tests/fixtures/control-alignment.html' );
 $desktop_css = explode( '@media (max-width: 1040px)', $css, 2 )[0];
 
 $checks = array(
@@ -13,6 +14,13 @@ $checks = array(
 	'initial back-to-top sync'                   => array( $js, 'syncTop();' ),
 	'escape close'                               => array( $js, "event.key === 'Escape'" ),
 	'button form isolation'                      => array( $accessibility, 'type="button" data-porumbesti-a11y-toggle' ),
+	'scale control class'                        => array( $accessibility, 'class="porumbesti-a11y-scale"' ),
+	'header icon padding reset'                  => array( $css, 'place-items: center; padding: 0;' ),
+	'floating control grid'                      => array( $css, '.porumbesti-floating button + button.is-visible { display: grid; }' ),
+	'scale control grid'                         => array( $css, 'grid-template-columns: 34px 54px 34px;' ),
+	'centered scale values'                      => array( $css, '.porumbesti-a11y-scale strong' ),
+	'centered switch track'                      => array( $css, 'justify-content: flex-start; box-sizing: border-box;' ),
+	'visual alignment fixture'                   => array( $alignment_fixture, 'Porumbești control alignment fixture' ),
 	'intermediate desktop gutter breakpoint'    => array( $css, '@media (max-width: 1288px)' ),
 	'tablet homepage gutter'                     => array( $css, 'padding-inline: 24px;' ),
 	'mobile homepage gutter'                     => array( $css, 'padding-inline: 14px;' ),

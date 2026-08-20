@@ -105,6 +105,11 @@ IMAGE_EXTENSIONS = {
     ".tiff",
     ".webp",
 }
+PRESENTATION_ASSETS = {
+    # This belongs to the retired Bridge/Qode page chrome and was repeated on
+    # almost every legacy page. It is not editorial content.
+    "processheader.png",
+}
 
 
 @dataclass
@@ -397,8 +402,13 @@ def asset_key(value: str) -> str | None:
         # Some old imports contain stacked generated-size suffixes, e.g.
         # photo-1024x768-300x225.jpg. Remove every trailing size marker.
         stem = re.sub(r"(?:-\d+x\d+)+$", "", stem)
-        stem = re.sub(r"-scaled$", "", stem)
+        # WordPress can keep the original attachment URL with a -rotated or
+        # -scaled suffix while its responsive derivatives use the old stem.
+        # Both names still represent the same uploaded editorial image.
+        stem = re.sub(r"-(?:rotated|scaled)$", "", stem)
         filename = f"{stem}{suffix}"
+    if filename in PRESENTATION_ASSETS:
+        return None
     return filename
 
 
@@ -544,7 +554,12 @@ def compare_item(
         dev_assets_for_compare = asset_keys(dev_urls)
     dev_assets = asset_keys(dev_urls)
     missing_assets = prod_assets - dev_assets_for_compare
-    title_present = title_in_text(title, dev_text) or str(prod_item.get("slug", "")) in {"home-ro", "home-hu"}
+    title_present = title_in_text(title, dev_text) or str(prod_item.get("slug", "")) in {
+        "home-ro",
+        "home-hu",
+        "prima",
+        "fooldal",
+    }
     severity, issue = classify(
         prod_result,
         dev_result,

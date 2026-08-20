@@ -1660,6 +1660,56 @@ final class Template_Applier {
 		return trim( $content );
 	}
 
+	private function mayor_message_from_source( string $normalized_content, string $language ): string {
+		$start_marker = 'hu' === $language ? 'Megtiszteltetés számomra' : 'În calitate de primar';
+		$stop_markers = 'hu' === $language
+			? array( 'Tóth Zoltán', 'Vezetőség', 'Polgármester', 'Alpolgármester', 'Jegyző' )
+			: array( 'Tóth Zoltán', 'Conducere', 'Primar', 'Viceprimar', 'Secretar' );
+		if ( ! preg_match_all( '/<(?:h[1-6]|p)\b[^>]*>(.*?)<\/(?:h[1-6]|p)>/is', $normalized_content, $matches ) ) {
+			return '';
+		}
+		$started = false;
+		$paragraphs = array();
+		foreach ( $matches[1] as $markup ) {
+			$value = html_entity_decode( wp_strip_all_tags( $markup ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+			$value = preg_replace( '/\s+/u', ' ', trim( $value ) ) ?? trim( $value );
+			if ( ! $value ) {
+				continue;
+			}
+			if ( ! $started ) {
+				if ( ! str_contains( $value, $start_marker ) ) {
+					continue;
+				}
+				$started = true;
+			}
+			foreach ( $stop_markers as $stop_marker ) {
+				if ( str_starts_with( $value, $stop_marker ) ) {
+					$started = false;
+					break 2;
+				}
+			}
+			$paragraphs[] = '<p class="porumbesti-mayor-quote">' . esc_html( $value ) . '</p>';
+		}
+		if ( ! $paragraphs ) {
+			return '';
+		}
+		$author = 'hu' === $language ? 'Tóth Zoltán · Polgármester' : 'Tóth Zoltán · Primar';
+		$paragraphs[] = '<p><strong>' . esc_html( $author ) . '</strong></p>';
+		return implode( '', $paragraphs );
+	}
+
+	private function homepage_mayor_message( \WP_Post $page, string $language ): string {
+		$source = $this->normalize_legacy_content( $this->original_page_content( $page ) );
+		$message = $this->mayor_message_from_source( $source, $language );
+		if ( '' !== $message ) {
+			return $message;
+		}
+		if ( 'hu' === $language ) {
+			return '<p class="porumbesti-mayor-quote">Kökényesd község polgármestereként szeretettel köszöntöm honlapunk látogatóit. Célunk, hogy a helyi közigazgatás által kezelt információkat nyitottan, átláthatóan és könnyen elérhetően tegyük közzé.</p><p><strong>Tóth Zoltán · Polgármester</strong></p>';
+		}
+		return '<p class="porumbesti-mayor-quote">În calitate de primar al comunei Porumbești, adresez un sincer bun venit tuturor celor ce au accesat acest site. Dorim să oferim informația produsă și gestionată de administrația publică locală într-un mod deschis și transparent.</p><p><strong>Tóth Zoltán · Primar</strong></p>';
+	}
+
 	private function original_content_sections( \WP_Post $page, string $language, string $seed ): array {
 		$source_content = $this->original_page_content( $page );
 		$normalized_content = $this->normalize_legacy_content( $source_content );
@@ -2147,7 +2197,7 @@ final class Template_Applier {
 			array( 'icon' => 'VP', 'image' => $vice_mayor_item ? $vice_mayor_item['image'] : $this->media(), 'title' => 'Simon Ilie · Viceprimar', 'description' => 'Conducerea executivă a administrației locale.', 'url' => $this->link( $routes['vice_mayor'] ) ),
 			array( 'icon' => 'SG', 'image' => $secretary_item ? $secretary_item['image'] : $this->media(), 'title' => 'Csorba Levente · Secretar general', 'description' => 'Secretarul general al Comunei Porumbești.', 'url' => $this->link( $routes['secretary'] ) ),
 		);
-		$mayor_message = '<p class="porumbesti-mayor-quote">În calitate de primar al comunei Porumbești, adresez un sincer bun venit tuturor celor ce au accesat acest site. Dorim să oferim informația produsă și gestionată de administrația publică locală într-un mod deschis și transparent.</p><p><strong>Tóth Zoltán · Primar</strong></p>';
+		$mayor_message = $this->homepage_mayor_message( $page, 'ro' );
 		$community_content = '<p>Descoperiți istoria comunei, prezentarea localității, personalitățile și activitatea sportivă locală.</p>'
 			. '<div class="porumbesti-home-link-list">'
 			. '<a href="' . esc_url( $routes['history'] ) . '">Istoria comunei <span>→</span></a>'
@@ -2401,7 +2451,7 @@ final class Template_Applier {
 			array( 'icon' => 'AP', 'image' => $vice_mayor_item ? $vice_mayor_item['image'] : $this->media(), 'title' => 'Simon Ilie · Alpolgármester', 'description' => 'A helyi közigazgatás végrehajtó vezetősége.', 'url' => $this->link( $routes['vice_mayor'] ) ),
 			array( 'icon' => 'J', 'image' => $secretary_item ? $secretary_item['image'] : $this->media(), 'title' => 'Csorba Levente · Jegyző', 'description' => 'Kökényesd község főjegyzője.', 'url' => $this->link( $routes['secretary'] ) ),
 		);
-		$mayor_message = '<p class="porumbesti-mayor-quote">Kökényesd község polgármestereként szeretettel köszöntöm honlapunk látogatóit. Célunk, hogy a helyi közigazgatás által kezelt információkat nyitottan, átláthatóan és könnyen elérhetően tegyük közzé.</p><p><strong>Tóth Zoltán · Polgármester</strong></p>';
+		$mayor_message = $this->homepage_mayor_message( $page, 'hu' );
 		$community_content = '<p>Ismerje meg Kökényesd Község történetét, jelentős személyiségeit és helyi sportéletét.</p><div class="porumbesti-home-link-list">'
 			. '<a href="' . esc_url( $routes['history'] ) . '">Községünk története <span>→</span></a>'
 			. '<a href="' . esc_url( $routes['monuments'] ) . '">Nagyjaink <span>→</span></a>'

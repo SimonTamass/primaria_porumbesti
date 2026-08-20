@@ -45,7 +45,7 @@ if ( ! str_contains( $css, 'font-size: 16px; line-height: 1.55' ) || ! str_conta
 	exit( 1 );
 }
 
-if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.17'" ) ) {
+if ( ! str_contains( $plugin, "PORUMBESTI_WIDGETS_VERSION', '1.0.18'" ) ) {
 	fwrite( STDERR, "Plugin version was not bumped.\n" );
 	exit( 1 );
 }
@@ -77,7 +77,7 @@ foreach ( array( 'Conținut păstrat integral', 'Toate informațiile publicate p
 	}
 }
 
-foreach ( array( 'function integrated_profile_content', "'bio' => \$profile_bio", 'Informații complete', 'Detalii și documente' ) as $needle ) {
+foreach ( array( 'function integrated_profile_content', 'function mayor_message_from_source', 'function homepage_mayor_message', "'bio' => \$profile_bio", 'Informații complete', 'Detalii și documente', 'Megtiszteltetés számomra', 'În calitate de primar' ) as $needle ) {
 	if ( ! str_contains( $applier, $needle ) ) {
 		fwrite( STDERR, "Integrated source-content presentation is incomplete: {$needle}.\n" );
 		exit( 1 );

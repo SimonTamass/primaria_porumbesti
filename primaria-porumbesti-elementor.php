@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Primăria Porumbești Elementor Widgets
  * Description: Bilingual Elementor widget suite, templates and document library for the Porumbești/Kökényesd municipal portal.
- * Version: 1.0.17
+ * Version: 1.0.18
  * Author: Primăria Comunei Porumbești
  * Text Domain: primaria-porumbesti
  * Requires at least: 6.4
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PORUMBESTI_WIDGETS_VERSION', '1.0.17' );
+define( 'PORUMBESTI_WIDGETS_VERSION', '1.0.18' );
 define( 'PORUMBESTI_WIDGETS_FILE', __FILE__ );
 define( 'PORUMBESTI_WIDGETS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PORUMBESTI_WIDGETS_URL', plugin_dir_url( __FILE__ ) );

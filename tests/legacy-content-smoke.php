@@ -21,6 +21,7 @@ $normalize = $reflection->getMethod( 'normalize_legacy_content' );
 $category = $reflection->getMethod( 'legacy_category_slug' );
 $queries = $reflection->getMethod( 'legacy_post_queries' );
 $integrated_profile = $reflection->getMethod( 'integrated_profile_content' );
+$mayor_message = $reflection->getMethod( 'mayor_message_from_source' );
 
 $legacy = '[vc_row][vc_column_text]<h1>Galeria Foto</h1><p>Text păstrat.</p>[/vc_column_text][masonry_blog order="DESC" category="galeria-foto-2018"][/vc_row]';
 $normalized = $normalize->invoke( $applier, $legacy );
@@ -84,6 +85,19 @@ foreach ( $preserved_profile_details as $detail ) {
 
 if ( 2 !== substr_count( $profile_content, 'porumbesti-profile-fact' ) ) {
 	fwrite( STDERR, "Mayor facts were not converted into profile rows.\n" );
+	exit( 1 );
+}
+
+$welcome_source = '<h1>Tisztelt Látogatók!</h1><h3>Megtiszteltetés számomra, hogy a település polgármestereként, önkormányzatunk nevében köszönthetek minden érdeklődőt.</h3><h3>Nehéz feladat, hiszen mi, lokálpatrióták talán elfogultak vagyunk.</h3><h3>De ez így helyes.</h3><h4>Mindannyiunk közös hite, lelkesedése, szorgalma, kitartása és az összefogás képessége tette Kökényesdet azzá, amilyennek most láthatjuk.</h4><h4>Arra törekszünk, hogy honlapunk minden fontos, hasznos helyi információt tartalmazzon.</h4><h4>Tóth Zoltán</h4><h4>Vezetőség</h4>';
+$welcome_message = $mayor_message->invoke( $applier, $welcome_source, 'hu' );
+foreach ( array( 'Megtiszteltetés számomra', 'Nehéz feladat', 'De ez így helyes.', 'Mindannyiunk közös hite', 'Arra törekszünk', 'Tóth Zoltán · Polgármester' ) as $phrase ) {
+	if ( ! str_contains( $welcome_message, $phrase ) ) {
+		fwrite( STDERR, "Homepage welcome message was not preserved: {$phrase}.\n" );
+		exit( 1 );
+	}
+}
+if ( str_contains( $welcome_message, 'Vezetőség' ) ) {
+	fwrite( STDERR, "Homepage welcome message leaked leadership markup.\n" );
 	exit( 1 );
 }
 

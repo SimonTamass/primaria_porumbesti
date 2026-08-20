@@ -2017,7 +2017,7 @@ final class Template_Applier {
 			$this->widget( $seed . '-details-widget', 'porumbesti-contact-details', array(
 				'kicker' => 'Locație', 'title' => 'Primăria Comunei Porumbești', 'description' => 'România, jud. Satu Mare, com. Porumbești, sat Porumbești, nr. 17C, cod 447152.',
 				'address' => 'România, jud. Satu Mare, com. Porumbești, sat Porumbești, nr. 17C, cod 447152', 'address_code' => 'AD',
-				'phone' => '0361 525 288', 'phone_secondary' => '0361 525 288', 'fax' => '0361 525 288', 'email' => 'primar@primariaporumbesti.ro', 'registration_label' => 'CIF', 'registration_value' => '17530869', 'hours' => '', 'hours_code' => 'OR',
+				'phone' => '0361 525 288', 'phone_secondary' => '', 'fax' => '0361 525 288', 'email' => 'primar@primariaporumbesti.ro', 'registration_label' => 'CIF', 'registration_value' => '17530869', 'hours' => '', 'hours_code' => 'OR',
 				'map_embed' => $this->link( self::MAP_EMBED_URL ), 'map_title' => 'Primăria Comunei Porumbești pe hartă',
 			) ),
 		), array( 'padding' => array( 'unit' => 'px', 'top' => '72', 'right' => '0', 'bottom' => '32', 'left' => '0', 'isLinked' => false ) ) );
@@ -2028,18 +2028,6 @@ final class Template_Applier {
 				'button_text' => 'Trimite mesajul', 'privacy_text' => 'Datele sunt folosite exclusiv pentru a răspunde solicitării.',
 			) ),
 		), array( 'background_background' => 'classic', 'background_color' => '#ffffff', 'padding' => array( 'unit' => 'px', 'top' => '64', 'right' => '0', 'bottom' => '64', 'left' => '0', 'isLinked' => false ) ) );
-		$data[] = $this->container( $seed . '-quick-links', array(
-			$this->widget( $seed . '-quick-links-widget', 'porumbesti-services-grid', array(
-				'columns' => '4',
-				'items_list' => $this->repeater( $seed . '-quick-link-items', array(
-					array( 'icon' => 'TEL', 'title' => 'Telefon', 'description' => '0361 525 288', 'url' => $this->link( 'tel:0361525288' ) ),
-					array( 'icon' => 'FAX', 'title' => 'Fax', 'description' => '0361 525 288', 'url' => $this->link( get_permalink( $page ) ) ),
-					array( 'icon' => '@', 'title' => 'Email oficial', 'description' => 'primar@primariaporumbesti.ro', 'url' => $this->link( 'mailto:primar@primariaporumbesti.ro' ) ),
-					array( 'icon' => 'AD', 'title' => 'Sediu', 'description' => 'Porumbești, nr. 17C, 447152', 'url' => $this->link( self::MAP_URL ) ),
-				) ),
-			) ),
-		), array( 'padding' => array( 'unit' => 'px', 'top' => '0', 'right' => '0', 'bottom' => '72', 'left' => '0', 'isLinked' => false ) ) );
-		$data = array_merge( $data, $this->original_content_sections( $page, 'ro', $seed ) );
 		$data[] = $this->redesign_page_end( $seed );
 		return $data;
 	}

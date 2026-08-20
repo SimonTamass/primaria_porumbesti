@@ -21,6 +21,7 @@ final class Plugin {
 		require_once PORUMBESTI_WIDGETS_PATH . 'includes/class-widget-registry.php';
 		require_once PORUMBESTI_WIDGETS_PATH . 'includes/class-elementor.php';
 		require_once PORUMBESTI_WIDGETS_PATH . 'includes/class-frontend-templates.php';
+		require_once PORUMBESTI_WIDGETS_PATH . 'includes/class-seo-meta.php';
 
 		add_action( 'init', array( $this, 'register_document_type' ) );
 		add_action( 'add_meta_boxes_porumbesti_document', array( $this, 'add_document_meta_box' ) );
@@ -30,6 +31,7 @@ final class Plugin {
 		add_action( 'admin_notices', array( $this, 'dependency_notice' ) );
 		Assets::instance();
 		Frontend_Templates::instance();
+		SEO_Meta::instance();
 
 		if ( is_admin() ) {
 			require_once PORUMBESTI_WIDGETS_PATH . 'includes/class-template-applier.php';

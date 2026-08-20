@@ -16,6 +16,7 @@ $checks = array(
 	'embedded office map' => array( $applier, '47.9839429,22.9718739' ),
 	'preserved fax control' => array( $details, "add_control( 'fax'" ),
 	'preserved fiscal identifier' => array( $details . $applier, '17530869' ),
+	'Romanian contact has one details block' => array( $applier, "'phone_secondary' => ''" ),
 	'localized field labels' => array( $form, "add_control( 'name_label'" ),
 	'contact language field' => array( $form, 'name="language"' ),
 	'secure POST fallback' => array( $form, 'method="post"' ),
@@ -36,6 +37,31 @@ foreach ( $checks as $label => $check ) {
 	list( $haystack, $needle ) = $check;
 	if ( ! str_contains( $haystack, $needle ) ) {
 		fwrite( STDERR, "Missing {$label}.\n" );
+		exit( 1 );
+	}
+}
+
+if ( str_contains( $applier, "'-quick-links-widget'" ) ) {
+	fwrite( STDERR, "Romanian contact page still contains the duplicate quick-link grid.\n" );
+	exit( 1 );
+}
+
+$snapshot = json_decode( file_get_contents( $root . '/content/live-content-snapshot.json' ), true );
+$source_contact = '';
+foreach ( (array) ( $snapshot['pages'] ?? $snapshot ) as $item ) {
+	if ( 134 === (int) ( $item['id'] ?? 0 ) ) {
+		$source_contact = (string) ( $item['content']['rendered'] ?? '' );
+		break;
+	}
+}
+$contact_start = strpos( $applier, 'private function contact_ro_data' );
+$contact_end = false !== $contact_start ? strpos( $applier, 'private function generic_page_data', $contact_start ) : false;
+$contact_block = false !== $contact_start && false !== $contact_end ? substr( $applier, $contact_start, $contact_end - $contact_start ) : '';
+$compact_source = preg_replace( '/\s+/u', '', strtolower( html_entity_decode( strip_tags( $source_contact ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) ) ?? '';
+$compact_contact = preg_replace( '/\s+/u', '', strtolower( $contact_block ) ) ?? '';
+foreach ( array( '17c', '447152', '0361525288', 'primar@primariaporumbesti.ro', '17530869' ) as $fact ) {
+	if ( ! str_contains( $compact_source, $fact ) || ! str_contains( $compact_contact, $fact ) ) {
+		fwrite( STDERR, "Romanian contact fact is not preserved in the consolidated contact block: {$fact}.\n" );
 		exit( 1 );
 	}
 }

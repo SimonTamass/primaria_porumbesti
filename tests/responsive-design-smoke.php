@@ -13,6 +13,7 @@ $checks = array(
 	'initial back-to-top sync'                   => array( $js, 'syncTop();' ),
 	'escape close'                               => array( $js, "event.key === 'Escape'" ),
 	'button form isolation'                      => array( $accessibility, 'type="button" data-porumbesti-a11y-toggle' ),
+	'intermediate desktop gutter breakpoint'    => array( $css, '@media (max-width: 1288px)' ),
 	'tablet homepage gutter'                     => array( $css, 'padding-inline: 24px;' ),
 	'mobile homepage gutter'                     => array( $css, 'padding-inline: 14px;' ),
 );

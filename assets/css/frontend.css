@@ -475,13 +475,16 @@ body.porumbesti-nav-open::before { position: fixed; z-index: 790; inset: 0; back
 	.porumbesti-title-band h1, .porumbesti-page-hero .porumbesti-title { font-size: 3.05rem; }
 }
 
-@media (max-width: 1040px) {
-  .porumbesti-home-page .porumbesti-content-media { grid-template-columns: 1fr; }
+@media (max-width: 1288px) {
   .porumbesti-home-page .elementor-widget-porumbesti-section-heading > .elementor-widget-container,
   .porumbesti-home-page .elementor-widget-porumbesti-services-grid > .elementor-widget-container,
   .porumbesti-home-page .elementor-widget-porumbesti-news-grid > .elementor-widget-container,
   .porumbesti-home-page .elementor-widget-porumbesti-content-media > .elementor-widget-container,
   .porumbesti-home-page .elementor-widget-porumbesti-cta-banner > .elementor-widget-container { padding-inline: 24px; }
+}
+
+@media (max-width: 1040px) {
+  .porumbesti-home-page .porumbesti-content-media { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
